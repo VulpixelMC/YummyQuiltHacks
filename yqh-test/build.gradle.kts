@@ -13,6 +13,8 @@ version = modVersion
 group = mavenGroup
 
 repositories {
+	mavenLocal()
+	mavenCentral()
 	// Add repositories to retrieve artifacts from in here.
 	// You should only use this when depending on other mods because
 	// Loom adds the essential maven repositories to download Minecraft and libraries from automatically.
@@ -54,15 +56,13 @@ dependencies {
 		// officialMojangMappings() // Uncomment if you want to use Mojang mappings as your primary mappings, falling back on QM for parameters and Javadocs
 	})
 	modImplementation(libs.quilt.loader)
-
+	
 	// QSL is not a complete API; You will need Quilted Fabric API to fill in the gaps.
 	// Quilted Fabric API will automatically pull in the correct QSL version.
 //	modImplementation(libs.quilted.fabric.api)
 	// modImplementation libs.bundles.quilted.fabric.api // If you wish to use Fabric API's deprecated modules, you can replace the above line with this one
 	
-	modImplementationInclude("org.ow2.asm", "asm-commons", "9.3")
-	modImplementationInclude("net.auoeke", "reflect", "5.+")
-	modImplementationInclude("net.gudenau.lib", "unsafe", "latest.release")
+	modImplementation("net.cursedmc:yqh:latest.release")
 	
 	modRuntimeOnly("com.terraformersmc", "modmenu", "4.0.0")
 	modRuntimeOnly("maven.modrinth", "wthit", "fabric-5.4.3")
@@ -77,7 +77,7 @@ dependencies {
 
 tasks.processResources {
 	inputs.property("version", version)
-
+	
 	filesMatching("quilt.mod.json") {
 		expand("version" to version)
 	}
@@ -93,11 +93,11 @@ java {
 	// Still required by IDEs such as Eclipse and Visual Studio Code
 	sourceCompatibility = JavaVersion.VERSION_17
 	targetCompatibility = JavaVersion.VERSION_17
-
+	
 	// Loom will automatically attach sourcesJar to a RemapSourcesJar task and to the "build" task if it is present.
 	// If you remove this line, sources will not be generated.
 	withSourcesJar()
-
+	
 	// If this mod is going to be a library, then it should also generate Javadocs in order to aid with developement.
 	// Uncomment this line to generate them.
 	// withJavadocJar()
@@ -113,10 +113,7 @@ tasks.withType<AbstractArchiveTask> {
 // Configure the maven publication
 publishing {
 	publications {
-		create<MavenPublication>("mavenJava") {
-			this.artifactId = modId
-			from(components["java"])
-		}
+	
 	}
 	
 	// See https://docs.gradle.org/current/userguide/publishing_maven.html for information on how to set up publishing.

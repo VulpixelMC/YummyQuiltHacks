@@ -2,11 +2,10 @@
 	"schema_version": 1,
 	"quilt_loader": {
 		"group": "net.cursedmc",
-		"id": "yqh",
+		"id": "yqh-test",
 		"version": "${version}",
 		"metadata": {
-			"license": "MPLv2",
-			"name": "YummyQuiltHacks",
+			"name": "YummyQuiltHacks Test",
 			"description": "A short description of your mod.",
 			"contributors": {
 				"Me!": "Owner"
@@ -16,10 +15,12 @@
 				"issues": "https://github.com/CursedMC/YummyQuiltHacks/issues",
 				"sources": "https://github.com/CursedMC/YummyQuiltHacks"
 			},
-			"icon": "assets/yqh/icon.png"
+			"icon": "assets/yqh-test/icon.png"
 		},
 		"intermediate_mappings": "net.fabricmc:intermediary",
-		"entrypoints": {},
+		"entrypoints": {
+			"yqh:prePreLaunch": "net.cursedmc.yqh.test.YummyQuiltHacksTest"
+		},
 		"depends": [
 			{
 				"id": "quilt_loader",
@@ -28,11 +29,12 @@
 			{
 				"id": "minecraft",
 				"versions": ">=1.19"
+			},
+			{
+				"id": "yqh",
+				"versions": "*"
 			}
-		],
-		"adapters": {
-			"yqh": "net.cursedmc.yqh.YummyQuiltHacks"
-		}
+		]
 	},
-	"mixin": "yqh.mixins.json"
+	"mixin": "yqh-test.mixins.json"
 }
