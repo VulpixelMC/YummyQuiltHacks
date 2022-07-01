@@ -5,7 +5,7 @@
 		"id": "yqh",
 		"version": "${version}",
 		"metadata": {
-			"license": "MPLv2",
+			"license": "MPL-2.0",
 			"name": "YummyQuiltHacks",
 			"description": "A short description of your mod.",
 			"contributors": {
@@ -29,10 +29,7 @@
 				"id": "minecraft",
 				"versions": ">=1.19"
 			}
-		],
-		"adapters": {
-			"yqh": "net.cursedmc.yqh.YummyQuiltHacks"
-		}
+		]
 	},
 	"mixin": "yqh.mixins.json"
 }
