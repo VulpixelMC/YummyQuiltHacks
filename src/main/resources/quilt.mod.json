@@ -19,7 +19,6 @@
 			"icon": "assets/yqh/icon.png"
 		},
 		"intermediate_mappings": "net.fabricmc:intermediary",
-		"entrypoints": {},
 		"depends": [
 			{
 				"id": "quilt_loader",
@@ -29,7 +28,10 @@
 				"id": "minecraft",
 				"versions": ">=1.19"
 			}
-		]
+		],
+		"language_adapters": {
+			"yqh": "net.cursedmc.yqh.YummyQuiltHacks"
+		}
 	},
 	"mixin": "yqh.mixins.json"
 }

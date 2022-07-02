@@ -19,7 +19,8 @@
 		},
 		"intermediate_mappings": "net.fabricmc:intermediary",
 		"entrypoints": {
-			"yqh:prePreLaunch": "net.cursedmc.yqh.test.YummyQuiltHacksTest"
+			"yqh:pre_pre_launch": "net.cursedmc.yqh.test.YummyQuiltHacksPrePreLaunch",
+			"yqh:pre_mixin": "net.cursedmc.yqh.test.YummyQuiltHacksPreMixin"
 		},
 		"depends": [
 			{

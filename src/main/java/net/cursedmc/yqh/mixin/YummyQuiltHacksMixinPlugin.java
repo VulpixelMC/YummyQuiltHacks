@@ -39,8 +39,8 @@ public class YummyQuiltHacksMixinPlugin implements IMixinConfigPlugin {
 	public void postApply(String targetClassName, ClassNode targetClass, String mixinClassName, IMixinInfo mixinInfo) {}
 	
 	static {
-		YummyQuiltHacks yqh = new YummyQuiltHacks();
+		YummyQuiltHacks.isMixinLoaded = true;
 		
-		EntrypointUtils.invoke("yqh:prePreLaunch", PrePreLaunch.class, PrePreLaunch::onPrePreLaunch);
+		EntrypointUtils.invoke("yqh:pre_pre_launch", PrePreLaunch.class, PrePreLaunch::onPrePreLaunch);
 	}
 }
