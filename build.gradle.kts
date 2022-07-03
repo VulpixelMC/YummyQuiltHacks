@@ -60,6 +60,9 @@ dependencies {
 //	modImplementation(libs.quilted.fabric.api)
 	// modImplementation libs.bundles.quilted.fabric.api // If you wish to use Fabric API's deprecated modules, you can replace the above line with this one
 	
+	@Suppress("UnstableApiUsage")
+	modImplementationInclude(libs.qsl.base)
+	
 	modImplementationInclude("org.ow2.asm", "asm-commons", "9.3")
 	modImplementationInclude("net.auoeke", "reflect", "5.+")
 	modImplementationInclude("net.gudenau.lib", "unsafe", "latest.release")
@@ -69,7 +72,7 @@ dependencies {
 	modRuntimeOnly("maven.modrinth", "badpackets", "fabric-0.1.2")
 	modRuntimeOnly("maven.modrinth", "emi", "0.2.0+1.19")
 	
-	modRuntimeOnly(libs.quilted.fabric.api)
+	modImplementation(libs.quilted.fabric.api)
 	
 	annotationProcessor("net.auoeke:uncheck:latest.release")
 	
@@ -115,7 +118,7 @@ tasks.withType<AbstractArchiveTask> {
 tasks.jar {
 	manifest {
 		attributes(
-			"Agent-Class" to "net.cursedmc.yqh.instrumentation.MusicAgent",
+			"Agent-Class" to "net.cursedmc.yqh.impl.instrumentation.MusicAgent",
 			"Can-Redefine-Classes" to "true",
 			"Can-Retransform-Classes" to "true",
 		)

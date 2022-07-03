@@ -1,6 +1,6 @@
 package net.cursedmc.yqh.test;
 
-import net.cursedmc.yqh.entrypoints.PreMixin;
+import net.cursedmc.yqh.api.entrypoints.PreMixin;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 

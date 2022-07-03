@@ -1,4 +1,4 @@
-package net.cursedmc.yqh.instrumentation;
+package net.cursedmc.yqh.impl.instrumentation;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;

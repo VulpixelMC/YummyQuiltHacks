@@ -2,7 +2,7 @@ package net.cursedmc.yqh;
 
 import com.sun.tools.attach.VirtualMachine;
 import net.auoeke.reflect.Accessor;
-import net.cursedmc.yqh.entrypoints.PreMixin;
+import net.cursedmc.yqh.api.entrypoints.PreMixin;
 import net.devtech.grossfabrichacks.unsafe.UnsafeUtil;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -27,18 +27,18 @@ public class YummyQuiltHacks implements LanguageAdapter {
 	public static final Logger LOGGER = LogManager.getLogger("YummyQuiltHacks");
 	
 	static {
-		LOGGER.fatal("Quilt has been successfully pwned >:3");
-		
 		ClassLoader appLoader = Knot.class.getClassLoader();
 		Accessor.<Map<String, String>>getReference(Class.forName("jdk.internal.misc.VM"), "savedProps").put("jdk.attach.allowAttachSelf", "true");
 		
+		// todo: add dev-env support
 		VirtualMachine vm = VirtualMachine.attach(String.valueOf(ProcessHandle.current().pid()));
 		String jarPath = YummyQuiltHacks.class.getProtectionDomain().getCodeSource().getLocation().getPath();
 		vm.loadAgent(jarPath);
 		
 		final String[] classes = {
 				"net.gudenau.lib.unsafe.Unsafe",
-				"net.cursedmc.yqh.instrumentation.Music",
+				"net.cursedmc.yqh.api.instrumentation.Music",
+				"net.cursedmc.yqh.api.mixin.Mixout",
 				"net.devtech.grossfabrichacks.unsafe.UnsafeUtil",
 				"net.devtech.grossfabrichacks.unsafe.UnsafeUtil$FirstInt",
 		};
@@ -51,6 +51,8 @@ public class YummyQuiltHacks implements LanguageAdapter {
 		LOGGER.info("Loaded classes with app loader");
 		
 		UNSAFE_LOADER = UnsafeUtil.defineAndInitializeAndUnsafeCast(YummyQuiltHacks.class.getClassLoader(), "org.quiltmc.loader.impl.launch.knot.UnsafeKnotClassLoader", appLoader);
+		
+		LOGGER.fatal("Quilt has been successfully pwned >:3");
 		
 		//noinspection unchecked
 		for (ModContainerImpl mod : (Collection<ModContainerImpl>) (Collection<?>) QuiltLoader.getAllMods()) {

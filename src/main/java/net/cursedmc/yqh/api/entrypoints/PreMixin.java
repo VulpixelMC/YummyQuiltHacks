@@ -1,4 +1,4 @@
-package net.cursedmc.yqh.entrypoints;
+package net.cursedmc.yqh.api.entrypoints;
 
 public interface PreMixin {
 	void onPreMixin();

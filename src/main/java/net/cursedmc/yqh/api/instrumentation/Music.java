@@ -1,4 +1,4 @@
-package net.cursedmc.yqh.instrumentation;
+package net.cursedmc.yqh.api.instrumentation;
 
 import ca.rttv.ASMFormatParser;
 import net.cursedmc.yqh.YummyQuiltHacks;
@@ -16,7 +16,7 @@ import java.lang.instrument.UnmodifiableClassException;
 import java.security.ProtectionDomain;
 import java.util.function.BiConsumer;
 
-import static net.cursedmc.yqh.instrumentation.MusicAgent.INST;
+import static net.cursedmc.yqh.impl.instrumentation.MusicAgent.INST;
 
 public class Music {
 	private static final Logger LOGGER = LogManager.getLogger("YummyQuiltHacks/Music");
@@ -60,6 +60,10 @@ public class Music {
 	
 	static {
 		LOGGER.info("Music Loaded");
+		LOGGER.info("what have we done");
+		LOGGER.info("how did we get here");
+		LOGGER.info("achievement unlcoekd");
+		LOGGER.info("advancement*");
 		
 		Music.retransformClass(Music.class.getClassLoader().loadClass("org.spongepowered.asm.mixin.transformer.MixinTransformer"), (name, cn) -> {
 			for (MethodNode m : cn.methods) {
@@ -77,10 +81,6 @@ public class Music {
                             ARETURN
                             B:
                             """, m));
-					m.instructions.forEach(node -> {
-						LOGGER.info(node.getClass().getName());
-						LOGGER.info(node.getOpcode());
-					});
 				}
 			}
 		});

@@ -1,8 +1,7 @@
 package net.cursedmc.yqh.mixin;
 
 import net.cursedmc.yqh.YummyQuiltHacks;
-import net.cursedmc.yqh.entrypoints.PrePreLaunch;
-import net.devtech.grossfabrichacks.unsafe.UnsafeUtil;
+import net.cursedmc.yqh.api.entrypoints.PrePreLaunch;
 import org.objectweb.asm.tree.ClassNode;
 import org.quiltmc.loader.impl.entrypoint.EntrypointUtils;
 import org.spongepowered.asm.mixin.extensibility.IMixinConfigPlugin;
