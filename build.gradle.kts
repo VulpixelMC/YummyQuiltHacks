@@ -71,6 +71,8 @@ dependencies {
 	
 	modRuntimeOnly(libs.quilted.fabric.api)
 	
+	annotationProcessor("net.auoeke:uncheck:latest.release")
+	
 	add(sourceSets.main.get().getTaskName("mod", JavaPlugin.IMPLEMENTATION_CONFIGURATION_NAME), modImplementationInclude)
 	add(net.fabricmc.loom.util.Constants.Configurations.INCLUDE, modImplementationInclude)
 }
@@ -107,6 +109,16 @@ java {
 tasks.withType<AbstractArchiveTask> {
 	from("LICENSE") {
 		rename { "${it}_${modId}" }
+	}
+}
+
+tasks.jar {
+	manifest {
+		attributes(
+			"Agent-Class" to "net.cursedmc.yqh.instrumentation.MusicAgent",
+			"Can-Redefine-Classes" to "true",
+			"Can-Retransform-Classes" to "true",
+		)
 	}
 }
 

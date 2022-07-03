@@ -376,15 +376,17 @@ Exhibit B - "Incompatible With Secondary Licenses" Notice
 
 package net.devtech.grossfabrichacks.unsafe;
 
+import net.gudenau.lib.unsafe.Unsafe;
+
 import java.io.InputStream;
 import java.lang.reflect.Array;
 import java.security.ProtectionDomain;
-import net.gudenau.lib.unsafe.Unsafe;
 
 //https://github.com/Devan-Kerman/GrossFabricHacks/blob/ae137cd46b262c0ef2ed6f982d1bbbeca0a6c4da/src/main/java/net/devtech/grossfabrichacks/unsafe/UnsafeUtil.java
 /**
  * works across all normal JVMs I think
  */
+@SuppressWarnings({"unused", "unchecked"})
 public class UnsafeUtil extends Unsafe {
 	// constants
 	public static final boolean x64;
@@ -591,8 +593,7 @@ public class UnsafeUtil extends Unsafe {
 		return defineAndInitialize(binaryName, klass, loader, null);
 	}
 	
-	public static <T> Class<T> defineAndInitialize(final String binaryName, final byte[] bytecode,
-	                                               final ClassLoader loader, final ProtectionDomain protectionDomain) {
+	public static <T> Class<T> defineAndInitialize(final String binaryName, final byte[] bytecode, final ClassLoader loader, final ProtectionDomain protectionDomain) {
 		final Class<?> klass;
 		
 		ensureClassInitialized(klass = defineClass(binaryName, bytecode, 0, bytecode.length, loader, protectionDomain));
@@ -600,7 +601,7 @@ public class UnsafeUtil extends Unsafe {
 		return (Class<T>) klass;
 	}
 	
-	public static <T> Class<T> initialiizeClass(final Class<?> klass) {
+	public static <T> Class<T> initializeClass(final Class<?> klass) {
 		ensureClassInitialized(klass);
 		
 		return (Class<T>) klass;
@@ -638,7 +639,7 @@ public class UnsafeUtil extends Unsafe {
 	
 	public static <T> Class<T> findAndDefineAndInitializeClass(final String binaryName, final ClassLoader loader) {
 		try {
-			return initialiizeClass(findAndDefineClass(binaryName, loader));
+			return initializeClass(findAndDefineClass(binaryName, loader));
 		} catch (final Throwable throwable) {
 			throw new RuntimeException(throwable);
 		}

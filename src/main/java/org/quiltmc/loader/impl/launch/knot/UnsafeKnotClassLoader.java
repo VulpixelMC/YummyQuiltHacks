@@ -1,13 +1,13 @@
 package org.quiltmc.loader.impl.launch.knot;
 
 import net.fabricmc.api.EnvType;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.quiltmc.loader.impl.game.GameProvider;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.net.URLClassLoader;
-import java.security.CodeSource;
 import java.util.Enumeration;
 
 /**
@@ -15,8 +15,9 @@ import java.util.Enumeration;
  */
 public class UnsafeKnotClassLoader extends KnotClassLoader {
 	public static final ClassLoader appLoader = UnsafeKnotClassLoader.class.getClassLoader();
-	public static final UnsafeKnotClassLoader knotLoader = (UnsafeKnotClassLoader) Thread.currentThread().getContextClassLoader();
+	public static final ClassLoader knotLoader = Thread.currentThread().getContextClassLoader();
 	public static final URLClassLoader urlLoader = (URLClassLoader) knotLoader.getParent();
+	public static final Logger LOGGER = LogManager.getLogger("YummyQuiltHacks/UnsafeKnotClassLoader");
 	
 	UnsafeKnotClassLoader(boolean isDevelopment, EnvType envType, GameProvider provider) {
 		super(isDevelopment, envType, provider);
@@ -48,22 +49,22 @@ public class UnsafeKnotClassLoader extends KnotClassLoader {
 	}
 	
 	@Override
-	public Enumeration<URL> getResources(String name) throws IOException {
+	public Enumeration<URL> getResources(String name) {
 		return super.getResources(name);
 	}
 	
 	@Override
-	protected Class<?> loadClass(String name, boolean resolve) throws ClassNotFoundException {
+	protected Class<?> loadClass(String name, boolean resolve) {
 		return super.loadClass(name, resolve);
 	}
 	
 	@Override
-	protected Class<?> findClass(String name) throws ClassNotFoundException {
+	protected Class<?> findClass(String name) {
 		return super.findClass(name);
 	}
 	
 	@Override
-	public Class<?> loadIntoTarget(String name) throws ClassNotFoundException {
+	public Class<?> loadIntoTarget(String name) {
 		return super.loadIntoTarget(name);
 	}
 	
@@ -73,7 +74,7 @@ public class UnsafeKnotClassLoader extends KnotClassLoader {
 	}
 	
 	@Override
-	public InputStream getResourceAsStream(String classFile, boolean allowFromParent) throws IOException {
+	public InputStream getResourceAsStream(String classFile, boolean allowFromParent) {
 		return super.getResourceAsStream(classFile, allowFromParent);
 	}
 	
@@ -85,5 +86,9 @@ public class UnsafeKnotClassLoader extends KnotClassLoader {
 	@Override
 	public Package definePackage(String name, String specTitle, String specVersion, String specVendor, String implTitle, String implVersion, String implVendor, URL sealBase) throws IllegalArgumentException {
 		return super.definePackage(name, specTitle, specVersion, specVendor, implTitle, implVersion, implVendor, sealBase);
+	}
+	
+	static {
+		LOGGER.info("Loaded UnsafeKnotClassLoader");
 	}
 }
