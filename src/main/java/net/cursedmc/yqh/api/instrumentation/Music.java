@@ -64,25 +64,5 @@ public class Music {
 		LOGGER.info("how did we get here");
 		LOGGER.info("achievement unlcoekd");
 		LOGGER.info("advancement*");
-		
-		Music.retransformClass(Music.class.getClassLoader().loadClass("org.spongepowered.asm.mixin.transformer.MixinTransformer"), (name, cn) -> {
-			for (MethodNode m : cn.methods) {
-				if ("(Lorg/spongepowered/asm/mixin/MixinEnvironment;Ljava/lang/String;[B)[B".equals(m.desc)) {
-					LOGGER.info("Target method found");
-					m.instructions.clear();
-					m.instructions.add(ASMFormatParser.parseInstructions("""
-                            A:
-                            LINE A 1
-                            ALOAD 0
-                            ALOAD 1
-                            ALOAD 2
-                            ALOAD 3
-                            INVOKESTATIC org/spongepowered/asm/mixin/transformer/HackedMixinTransformer.transformClass(Lorg/spongepowered/asm/mixin/transformer/MixinTransformer;Lorg/spongepowered/asm/mixin/MixinEnvironment;Ljava/lang/String;[B)[B
-                            ARETURN
-                            B:
-                            """, m));
-				}
-			}
-		});
 	}
 }

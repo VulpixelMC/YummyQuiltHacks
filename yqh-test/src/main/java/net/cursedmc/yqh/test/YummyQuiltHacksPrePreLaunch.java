@@ -5,7 +5,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 public class YummyQuiltHacksPrePreLaunch implements PrePreLaunch {
-	private static final Logger LOGGER = LogManager.getLogger("YummyQuiltHacks/PrePreLaunch");
+	private static final Logger LOGGER = LogManager.getLogger("YummyQuiltHacks/PrePreLaunchTest");
 	
 	@Override
 	public void onPrePreLaunch() {

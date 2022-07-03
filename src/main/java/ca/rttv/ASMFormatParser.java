@@ -108,6 +108,10 @@ public class ASMFormatParser {
 			case "FLOAD" -> list.add(new VarInsnNode(FLOAD, Integer.parseInt(words[1])));
 			case "DLOAD" -> list.add(new VarInsnNode(DLOAD, Integer.parseInt(words[1])));
 			case "ALOAD" -> list.add(new VarInsnNode(ALOAD, Integer.parseInt(words[1])));
+			case "ALOAD_0" -> list.add(new InsnNode(42));
+			case "ALOAD_1" -> list.add(new InsnNode(43));
+			case "ALOAD_2" -> list.add(new InsnNode(44));
+			case "ALOAD_3" -> list.add(new InsnNode(45));
 			case "IALOAD" -> list.add(new InsnNode(IALOAD));
 			case "LALOAD" -> list.add(new InsnNode(LALOAD));
 			case "FALOAD" -> list.add(new InsnNode(FALOAD));
@@ -227,6 +231,7 @@ public class ASMFormatParser {
 			case "INVOKEVIRTUAL" -> list.add(new MethodInsnNode(INVOKEVIRTUAL, words[1].split("[.(]")[0], words[1].split("[.(]")[1], getDescriptor(words[1])));
 			case "INVOKESPECIAL" -> list.add(new MethodInsnNode(INVOKESPECIAL, words[1].split("[.(]")[0], words[1].split("[.(]")[1], getDescriptor(words[1])));
 			case "INVOKESTATIC" -> list.add(new MethodInsnNode(INVOKESTATIC, words[1].split("[.(]")[0], words[1].split("[.(]")[1], getDescriptor(words[1])));
+			case "INVOKESTATIC_itf" -> list.add(new MethodInsnNode(INVOKESTATIC, words[1].split("[.(]")[0], words[1].split("[.(]")[1], getDescriptor(words[1]), true));
 			case "INVOKEINTERFACE" -> list.add(new MethodInsnNode(INVOKEINTERFACE, words[1].split("[.(]")[0], words[1].split("[.(]")[1], getDescriptor(words[1])));
 			case "INVOKEDYNAMIC" -> list.add(new MethodInsnNode(INVOKEDYNAMIC, words[1].split("[.(]")[0], words[1].split("[.(]")[1], getDescriptor(words[1])));
 			case "NEW" -> list.add(new TypeInsnNode(NEW, words[1]));

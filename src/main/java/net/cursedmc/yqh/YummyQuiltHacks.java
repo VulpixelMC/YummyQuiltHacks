@@ -58,8 +58,8 @@ public class YummyQuiltHacks implements LanguageAdapter {
 		for (ModContainerImpl mod : (Collection<ModContainerImpl>) (Collection<?>) QuiltLoader.getAllMods()) {
 			if (mod.getInternalMeta().getEntrypoints().containsKey("yqh:pre_mixin")) {
 				for (AdapterLoadableClassEntry entry : mod.getInternalMeta().getEntrypoints().get("yqh:pre_mixin")) {
-					PreMixin preMixin = (PreMixin) Class.forName(entry.getValue()).getConstructor().newInstance();
-					preMixin.onPreMixin();
+					Object preMixin = Class.forName(entry.getValue(), true, appLoader).getConstructor().newInstance();
+					preMixin.getClass().getMethod("onPreMixin").invoke(preMixin);
 				}
 			}
 		}

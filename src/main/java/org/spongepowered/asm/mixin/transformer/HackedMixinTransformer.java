@@ -1,8 +1,13 @@
 package org.spongepowered.asm.mixin.transformer;
 
+import ca.rttv.ASMFormatParser;
 import net.auoeke.reflect.Fields;
 import net.auoeke.reflect.Methods;
+import net.cursedmc.yqh.api.mixin.Mixout;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.objectweb.asm.tree.ClassNode;
+import org.objectweb.asm.tree.MethodNode;
 import org.spongepowered.asm.mixin.MixinEnvironment;
 import org.spongepowered.asm.transformers.TreeTransformer;
 
@@ -13,12 +18,16 @@ public class HackedMixinTransformer {
 	private static final Method readClass;
 	private static final Method writeClass;
 	private static final Field processorField;
+	private static final Logger LOGGER = LogManager.getLogger("YummyQuiltHacks/HackedMixinTransformer");
 	
 	public static byte[] transformClass(MixinTransformer self, MixinEnvironment environment, String name, byte[] classBytes) {
 		ClassNode classNode = readClass(self, name, classBytes);
+		Mixout.TransformEvent.PRE_MIXIN.forEach(event -> event.transform(name, classNode));
 		if (getProcessor(self).applyMixins(environment, name, classNode)) {
-			return writeClass(self, classNode);
+			classBytes = writeClass(self, classNode);
+			classNode = readClass(self, name, classBytes);
 		}
+		Mixout.TransformEvent.POST_MIXIN.forEach(event -> event.transform(name, classNode));
 		return classBytes;
 	}
 	
