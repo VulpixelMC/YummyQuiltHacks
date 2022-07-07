@@ -3,6 +3,7 @@
 build/
 out/
 classes/
+/yummy_agent.jar
 
 # Quilt Loom
 run/

@@ -1,23 +1,66 @@
 package ca.rttv;
 
+import net.cursedmc.yqh.api.util.MapUtils;
 import org.objectweb.asm.tree.*;
 
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import static org.objectweb.asm.Opcodes.*;
 
 //https://gist.github.com/RealRTTV/6d4576998f3780c9766a63caa5ab9ae1
 public class ASMFormatParser {
 	
-	public static InsnList parseInstructions(String str, MethodNode method) {
+	private static final String PLACEHOLDER = "!YQH!";
+	
+	/**
+	 * Finds any unmapped {@code net.minecraft.*} classes/methods/fields and maps them.
+	 * @param unmapped the unmapped string
+	 * @return the mapped string
+	 */
+	public static String mapString(String unmapped) {
+		// map methods
+		Pattern methodPattern = Pattern.compile("(net/minecraft/.+)\\.(.+)(\\(.+\\)\\S+)");
+		Matcher methodMatcher = methodPattern.matcher(unmapped);
+		while (methodMatcher.find()) {
+			unmapped = (unmapped.replace(methodMatcher.group(), MapUtils.mappedClass(methodMatcher.group(1).replaceAll("/", ".")).replaceAll("\\.", "/") + '.' + MapUtils.mappedMethod(methodMatcher.group(1).replaceAll("/", "."), methodMatcher.group(2), methodMatcher.group(3)) + methodMatcher.group(3))).replaceAll("net/minecraft", "net/" + PLACEHOLDER);
+		}
+		
+		// map fields
+		Pattern fieldPattern = Pattern.compile("(net/minecraft/.+\\.([^(\\s]+)) (\\[?(?:[BCDFIJSZ]|(?:L.+;)))");
+		Matcher fieldMatcher = fieldPattern.matcher(unmapped);
+		while (fieldMatcher.find()) {
+			unmapped = unmapped.replace(fieldMatcher.group(), MapUtils.mappedField(fieldMatcher.group(1).replaceAll("/", "."), fieldMatcher.group(2), fieldMatcher.group(3)).replaceAll("\\.(?![A-Za-z]+[( ])", "/").replaceAll("net/minecraft", "net/" + PLACEHOLDER));
+		}
+		
+		// map classes
+		Pattern classPattern = Pattern.compile("net/minecraft/[^;.\\s]+");
+		Matcher classMatcher = classPattern.matcher(unmapped);
+		while (classMatcher.find()) {
+			unmapped = unmapped.replace(classMatcher.group(), MapUtils.mappedClass(classMatcher.group().replaceAll("/", "."))).replaceAll("\\.(?![A-Za-z]+[( ])", "/");
+		}
+		
+		return unmapped.replaceAll("net/" + PLACEHOLDER, "net/minecraft");
+	}
+	
+	public static InsnList parseInstructions(String unmapped, MethodNode method) {
+		System.out.println(unmapped);
+		return parseInstructions(unmapped, method, true);
+	}
+	
+	public static InsnList parseInstructions(String unmapped, MethodNode method, boolean map) {
+		String mapped = map ? mapString(unmapped) : unmapped; // the mapped string
+		System.out.println(mapped);
+		
 		InsnList list = new InsnList();
 		Map<String, LabelNode> labels = new HashMap<>();
 		Map<String, LabelNode> vanillaLabels = new HashMap<>();
 		
-		String[] lines = str.split("\n");
+		String[] lines = mapped.split("\n");
 		
 		for (String line : lines) {
 			if (line.matches("[A-Za-z]+:")) {

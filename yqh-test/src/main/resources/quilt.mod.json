@@ -20,7 +20,8 @@
 		"intermediate_mappings": "net.fabricmc:intermediary",
 		"entrypoints": {
 			"yqh:pre_pre_launch": "net.cursedmc.yqh.test.YummyQuiltHacksPrePreLaunch",
-			"yqh:pre_mixin": "net.cursedmc.yqh.test.YummyQuiltHacksPreMixin"
+			"yqh:pre_mixin": "net.cursedmc.yqh.test.YummyQuiltHacksPreMixin",
+			"init": "net.cursedmc.yqh.test.YummyQuiltHacksTest"
 		},
 		"depends": [
 			{

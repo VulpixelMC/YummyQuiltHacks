@@ -2,11 +2,13 @@ package net.cursedmc.yqh.api.mixin;
 
 import ca.rttv.ASMFormatParser;
 import net.cursedmc.yqh.api.instrumentation.Music;
+import net.cursedmc.yqh.impl.mixin.YummyMixinExtension;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.objectweb.asm.tree.ClassNode;
 import org.objectweb.asm.tree.MethodNode;
-import org.quiltmc.qsl.base.api.event.Event;
+import org.spongepowered.asm.mixin.MixinEnvironment;
+import org.spongepowered.asm.mixin.transformer.ext.IExtension;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,30 +22,48 @@ public class Mixout {
 		List<TransformEvent> POST_MIXIN = new ArrayList<>();
 		
 		void transform(String name, ClassNode node);
+		
+		static void registerPreMixin(TransformEvent callback) {
+			PRE_MIXIN.add(callback);
+		}
+		
+		static void registerPostMixin(TransformEvent callback) {
+			POST_MIXIN.add(callback);
+		}
+		
+		static void preMixin(String name, ClassNode cn) {
+			PRE_MIXIN.forEach(callback -> callback.transform(name, cn));
+		}
+		
+		static void postMixin(String name, ClassNode cn) {
+			POST_MIXIN.forEach(callback -> callback.transform(name, cn));
+		}
 	}
 	
 	static {
+		LOGGER.info(Mixout.class.getClassLoader());
 		LOGGER.info("mixin, mixout. mixin, mixout. /lyr");
 		LOGGER.info("we have truly achieved a sad state of realization, one that encompasses the entire jdk, the minecraft classes.. everything. we have untold power, and with so may come untold consequences. tread lightly, explorer.");
 		
-		Music.retransformClass(Music.class.getClassLoader().loadClass("org.spongepowered.asm.mixin.transformer.MixinTransformer"), (name, cn) -> {
-			for (MethodNode m : cn.methods) {
-				if ("(Lorg/spongepowered/asm/mixin/MixinEnvironment;Ljava/lang/String;[B)[B".equals(m.desc)) {
-					LOGGER.info("Target method found");
-					m.instructions.clear();
-					m.instructions.add(ASMFormatParser.parseInstructions("""
-                            A:
-                            LINE A 1
-                            ALOAD 0
-                            ALOAD 1
-                            ALOAD 2
-                            ALOAD 3
-                            INVOKESTATIC org/spongepowered/asm/mixin/transformer/HackedMixinTransformer.transformClass(Lorg/spongepowered/asm/mixin/transformer/MixinTransformer;Lorg/spongepowered/asm/mixin/MixinEnvironment;Ljava/lang/String;[B)[B
-                            ARETURN
-                            B:
-                            """, m));
-				}
-			}
-		});
+//		Music.retransformClass(Class.forName("org.spongepowered.asm.mixin.transformer.MixinTransformer"), (name, cn) -> {
+//			for (MethodNode m : cn.methods) {
+//				if ("(Lorg/spongepowered/asm/mixin/MixinEnvironment;Ljava/lang/String;[B)[B".equals(m.desc)) {
+//					LOGGER.info("Target method found");
+//					m.instructions.clear();
+//					m.instructions.add(ASMFormatParser.parseInstructions("""
+//                            A:
+//                            LINE A 233
+//                            ALOAD 0
+//                            ALOAD 1
+//                            ALOAD 2
+//                            ALOAD 3
+//                            INVOKESTATIC org/spongepowered/asm/mixin/transformer/HackedMixinTransformer.transformClass(Lorg/spongepowered/asm/mixin/transformer/MixinTransformer;Lorg/spongepowered/asm/mixin/MixinEnvironment;Ljava/lang/String;[B)[B
+//                            ARETURN
+//                            B:
+//                            """, m, false));
+//					LOGGER.info("HackedMixinTransformer successfully applied to MixinTransformer");
+//				}
+//			}
+//		});
 	}
 }

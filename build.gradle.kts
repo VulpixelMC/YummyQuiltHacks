@@ -8,6 +8,8 @@ val modVersion: String by project
 val mavenGroup: String by project
 val modId: String by project
 
+var hasCopied = false
+
 base.archivesBaseName = modId
 version = modVersion
 group = mavenGroup
@@ -86,6 +88,18 @@ tasks.processResources {
 	filesMatching("quilt.mod.json") {
 		expand("version" to version)
 	}
+	
+	dependsOn("copyAgentJar")
+}
+
+tasks.register<Copy>("copyAgentJar") {
+	this.destinationDir = tasks.processResources.get().destinationDir
+	
+	dependsOn(":agent:jar")
+	
+	from(project(":agent").tasks.jar.get().archiveFile) {
+		rename { "yummy_agent.jar" }
+	}
 }
 
 tasks.withType<JavaCompile> {
@@ -112,16 +126,6 @@ java {
 tasks.withType<AbstractArchiveTask> {
 	from("LICENSE") {
 		rename { "${it}_${modId}" }
-	}
-}
-
-tasks.jar {
-	manifest {
-		attributes(
-			"Agent-Class" to "net.cursedmc.yqh.impl.instrumentation.MusicAgent",
-			"Can-Redefine-Classes" to "true",
-			"Can-Retransform-Classes" to "true",
-		)
 	}
 }
 

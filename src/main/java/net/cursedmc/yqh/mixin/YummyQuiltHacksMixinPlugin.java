@@ -2,11 +2,17 @@ package net.cursedmc.yqh.mixin;
 
 import net.cursedmc.yqh.YummyQuiltHacks;
 import net.cursedmc.yqh.api.entrypoints.PrePreLaunch;
+import net.cursedmc.yqh.impl.mixin.YummyMixinExtension;
 import org.objectweb.asm.tree.ClassNode;
 import org.quiltmc.loader.impl.entrypoint.EntrypointUtils;
+import org.spongepowered.asm.mixin.MixinEnvironment;
 import org.spongepowered.asm.mixin.extensibility.IMixinConfigPlugin;
 import org.spongepowered.asm.mixin.extensibility.IMixinInfo;
+import org.spongepowered.asm.mixin.transformer.ext.Extensions;
+import org.spongepowered.asm.mixin.transformer.ext.IExtension;
 
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Set;
 
@@ -40,6 +46,13 @@ public class YummyQuiltHacksMixinPlugin implements IMixinConfigPlugin {
 	
 	static {
 		YummyQuiltHacks.isMixinLoaded = true;
+		
+		Object transformer = MixinEnvironment.getCurrentEnvironment().getActiveTransformer();
+		Class<?> mixinTransformerClass = Class.forName("org.spongepowered.asm.mixin.transformer.MixinTransformer");
+		Field extensionsField = mixinTransformerClass.getDeclaredField("extensions");
+		extensionsField.setAccessible(true);
+		Extensions extensions = (Extensions) extensionsField.get(transformer);
+		extensions.add(new YummyMixinExtension());
 		
 		EntrypointUtils.invoke("yqh:pre_pre_launch", PrePreLaunch.class, PrePreLaunch::onPrePreLaunch);
 	}

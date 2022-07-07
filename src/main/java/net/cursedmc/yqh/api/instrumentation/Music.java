@@ -9,17 +9,18 @@ import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.tree.ClassNode;
 import org.objectweb.asm.tree.MethodNode;
+import org.quiltmc.loader.impl.launch.knot.Knot;
 import org.quiltmc.loader.impl.launch.knot.UnsafeKnotClassLoader;
 
 import java.lang.instrument.ClassFileTransformer;
+import java.lang.instrument.Instrumentation;
 import java.lang.instrument.UnmodifiableClassException;
 import java.security.ProtectionDomain;
 import java.util.function.BiConsumer;
 
-import static net.cursedmc.yqh.impl.instrumentation.MusicAgent.INST;
-
 public class Music {
 	private static final Logger LOGGER = LogManager.getLogger("YummyQuiltHacks/Music");
+	public static final Instrumentation INST;
 	
 	private Music() {}
 	
@@ -64,5 +65,9 @@ public class Music {
 		LOGGER.info("how did we get here");
 		LOGGER.info("achievement unlcoekd");
 		LOGGER.info("advancement*");
+		ClassLoader appLoader = Knot.class.getClassLoader();
+		
+		Class<?> musicAgent = Class.forName("net.cursedmc.yqh.impl.instrumentation.MusicAgent", true, appLoader);
+		INST = (Instrumentation) musicAgent.getDeclaredField("INST").get(null);
 	}
 }

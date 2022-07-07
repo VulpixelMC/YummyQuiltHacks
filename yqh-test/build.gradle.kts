@@ -64,12 +64,9 @@ dependencies {
 	
 	modImplementation("net.cursedmc:yqh:latest.release")
 	
-	modRuntimeOnly("com.terraformersmc", "modmenu", "4.0.0")
-	modRuntimeOnly("maven.modrinth", "wthit", "fabric-5.4.3")
-	modRuntimeOnly("maven.modrinth", "badpackets", "fabric-0.1.2")
-	modRuntimeOnly("maven.modrinth", "emi", "0.2.0+1.19")
-	
 	modRuntimeOnly(libs.quilted.fabric.api)
+	
+	annotationProcessor("net.auoeke:uncheck:latest.release")
 	
 	add(sourceSets.main.get().getTaskName("mod", JavaPlugin.IMPLEMENTATION_CONFIGURATION_NAME), modImplementationInclude)
 	add(net.fabricmc.loom.util.Constants.Configurations.INCLUDE, modImplementationInclude)
