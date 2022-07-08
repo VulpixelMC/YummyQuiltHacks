@@ -8,8 +8,7 @@ import net.fabricmc.api.EnvType;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.objectweb.asm.Opcodes;
-import org.objectweb.asm.tree.FieldNode;
-import org.objectweb.asm.tree.MethodNode;
+import org.objectweb.asm.tree.*;
 import org.quiltmc.loader.api.QuiltLoader;
 import org.quiltmc.loader.api.minecraft.MinecraftQuiltLoader;
 
@@ -47,12 +46,24 @@ public class YummyQuiltHacksPreMixin implements PreMixin {
 				for (MethodNode m : cn.methods) {
 					if ("<init>".equals(m.name)) {
 						LOGGER.info("target method found");
-						m.instructions.forEach(LOGGER::info);
 						m.instructions.insertBefore(m.instructions.get(m.instructions.size() - 2), ASMFormatParser.parseInstructions("""
                         ALOAD 0
                         LDC "experience the A S M (T M)."
                         """ + "INVOKESTATIC_itf " + textClass + '.' + textOfMethod + "(Ljava/lang/String;)L" + textClass + ';' +
                         "\nPUTFIELD " + screenClass + '.' + screenTitleField + " L" + textClass + ';', m, false));
+						m.instructions.forEach(insn -> {
+							if (insn instanceof VarInsnNode) {
+								LOGGER.info("var_insn " + ((VarInsnNode) insn).var);
+							} else if (insn instanceof LdcInsnNode) {
+								LOGGER.info("ldc " + ((LdcInsnNode) insn).cst);
+							} else if (insn instanceof MethodInsnNode) {
+								LOGGER.info("method_insn " + ((MethodInsnNode) insn).owner + '.' + ((MethodInsnNode) insn).name + ((MethodInsnNode) insn).desc);
+							} else if (insn instanceof FieldInsnNode) {
+								LOGGER.info("field_insn " + ((FieldInsnNode) insn).owner + '.' + ((FieldInsnNode) insn).name + ' ' + ((FieldInsnNode) insn).desc);
+							} else {
+								LOGGER.info(insn);
+							}
+						});
 						LOGGER.info("applied");
 					}
 				}

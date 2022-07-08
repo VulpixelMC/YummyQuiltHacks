@@ -2,12 +2,14 @@ package net.cursedmc.yqh.mixin;
 
 import net.cursedmc.yqh.YummyQuiltHacks;
 import net.cursedmc.yqh.api.entrypoints.PrePreLaunch;
-import net.cursedmc.yqh.impl.mixin.YummyMixinExtension;
+import net.devtech.grossfabrichacks.unsafe.UnsafeUtil;
 import org.objectweb.asm.tree.ClassNode;
 import org.quiltmc.loader.impl.entrypoint.EntrypointUtils;
+import org.quiltmc.loader.impl.launch.knot.UnsafeKnotClassLoader;
 import org.spongepowered.asm.mixin.MixinEnvironment;
 import org.spongepowered.asm.mixin.extensibility.IMixinConfigPlugin;
 import org.spongepowered.asm.mixin.extensibility.IMixinInfo;
+import org.spongepowered.asm.mixin.transformer.HackedMixinProcessor;
 import org.spongepowered.asm.mixin.transformer.ext.Extensions;
 import org.spongepowered.asm.mixin.transformer.ext.IExtension;
 
@@ -49,10 +51,10 @@ public class YummyQuiltHacksMixinPlugin implements IMixinConfigPlugin {
 		
 		Object transformer = MixinEnvironment.getCurrentEnvironment().getActiveTransformer();
 		Class<?> mixinTransformerClass = Class.forName("org.spongepowered.asm.mixin.transformer.MixinTransformer");
-		Field extensionsField = mixinTransformerClass.getDeclaredField("extensions");
-		extensionsField.setAccessible(true);
-		Extensions extensions = (Extensions) extensionsField.get(transformer);
-		extensions.add(new YummyMixinExtension());
+		Field processorField = mixinTransformerClass.getDeclaredField("processor");
+		processorField.setAccessible(true);
+		Object processor = processorField.get(transformer);
+		UnsafeUtil.unsafeCast(processor, Class.forName("org.spongepowered.asm.mixin.transformer.HackedMixinProcessor", true, UnsafeKnotClassLoader.appLoader));
 		
 		EntrypointUtils.invoke("yqh:pre_pre_launch", PrePreLaunch.class, PrePreLaunch::onPrePreLaunch);
 	}

@@ -116,6 +116,7 @@ public class UnsafeKnotClassLoader extends KnotClassLoader {
 				"net.cursedmc.yqh.api.mixin.Mixout$TransformEvent",
 				"ca.rttv.ASMFormatParser",
 				"net.cursedmc.yqh.api.entrypoints.PreMixin",
+				"org.spongepowered.asm.mixin.transformer.HackedMixinProcessor",
 		};
 		
 		for (String name : manualLoad) {

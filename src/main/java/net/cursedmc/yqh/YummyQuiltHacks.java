@@ -82,7 +82,6 @@ public class YummyQuiltHacks implements LanguageAdapter {
 				"net.auoeke.reflect.Accessor",
 				"net.auoeke.reflect.Reflect",
 				"net.auoeke.reflect.CacheMap",
-				"org.spongepowered.asm.mixin.transformer.HackedMixinTransformer",
 		};
 		
 		for (String name : manualLoad) {

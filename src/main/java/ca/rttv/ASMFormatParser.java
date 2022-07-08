@@ -48,7 +48,6 @@ public class ASMFormatParser {
 	}
 	
 	public static InsnList parseInstructions(String unmapped, MethodNode method) {
-		System.out.println(unmapped);
 		return parseInstructions(unmapped, method, true);
 	}
 	
