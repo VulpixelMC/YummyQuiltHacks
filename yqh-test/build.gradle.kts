@@ -24,7 +24,7 @@ repositories {
 		name = "TerraformersMC"
 		url = uri("https://maven.terraformersmc.com/")
 	}
-	
+
 	maven {
 		name = "Modrinth"
 		url = uri("https://api.modrinth.com/maven")
@@ -32,12 +32,12 @@ repositories {
 			includeGroup("maven.modrinth")
 		}
 	}
-	
+
 	maven {
 		name = "auoeke Maven"
 		url = uri("https://maven.auoeke.net")
 	}
-	
+
 	maven {
 		name = "ENDERZOMBI102 Maven"
 		url = uri("https://repsy.io/mvn/enderzombi102/mc")
@@ -53,28 +53,20 @@ dependencies {
 	minecraft(libs.minecraft)
 	mappings(loom.layered() {
 		addLayer(quiltMappings.mappings("org.quiltmc:quilt-mappings:${libs.versions.quilt.mappings.get()}:v2"))
-		// officialMojangMappings() // Uncomment if you want to use Mojang mappings as your primary mappings, falling back on QM for parameters and Javadocs
 	})
 	modImplementation(libs.quilt.loader)
-	
-	// QSL is not a complete API; You will need Quilted Fabric API to fill in the gaps.
-	// Quilted Fabric API will automatically pull in the correct QSL version.
-//	modImplementation(libs.quilted.fabric.api)
-	// modImplementation libs.bundles.quilted.fabric.api // If you wish to use Fabric API's deprecated modules, you can replace the above line with this one
-	
-	modImplementation("net.cursedmc:yqh:latest.release")
-	
+
+	implementation( rootProject )
+
 	modRuntimeOnly(libs.quilted.fabric.api)
-	
-	annotationProcessor("net.auoeke:uncheck:latest.release")
-	
+
 	add(sourceSets.main.get().getTaskName("mod", JavaPlugin.IMPLEMENTATION_CONFIGURATION_NAME), modImplementationInclude)
 	add(net.fabricmc.loom.util.Constants.Configurations.INCLUDE, modImplementationInclude)
 }
 
 tasks.processResources {
 	inputs.property("version", version)
-	
+
 	filesMatching("quilt.mod.json") {
 		expand("version" to version)
 	}
@@ -90,11 +82,11 @@ java {
 	// Still required by IDEs such as Eclipse and Visual Studio Code
 	sourceCompatibility = JavaVersion.VERSION_17
 	targetCompatibility = JavaVersion.VERSION_17
-	
+
 	// Loom will automatically attach sourcesJar to a RemapSourcesJar task and to the "build" task if it is present.
 	// If you remove this line, sources will not be generated.
 	withSourcesJar()
-	
+
 	// If this mod is going to be a library, then it should also generate Javadocs in order to aid with developement.
 	// Uncomment this line to generate them.
 	// withJavadocJar()
@@ -110,9 +102,9 @@ tasks.withType<AbstractArchiveTask> {
 // Configure the maven publication
 publishing {
 	publications {
-	
+
 	}
-	
+
 	// See https://docs.gradle.org/current/userguide/publishing_maven.html for information on how to set up publishing.
 	repositories {
 		// Add repositories to publish to here.
