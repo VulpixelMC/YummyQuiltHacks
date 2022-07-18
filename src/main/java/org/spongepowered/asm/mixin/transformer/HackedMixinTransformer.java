@@ -19,30 +19,24 @@ public class HackedMixinTransformer {
 	private static final Method writeClass;
 	private static final Field processorField;
 	private static final Logger LOGGER = LogManager.getLogger("YummyQuiltHacks/HackedMixinTransformer");
-	
+
 	public static byte[] transformClass(MixinTransformer self, MixinEnvironment environment, String name, byte[] classBytes) {
-		ClassNode classNode = readClass(self, name, classBytes);
-		Mixout.TransformEvent.PRE_MIXIN.forEach(event -> event.transform(name, classNode));
-		if (getProcessor(self).applyMixins(environment, name, classNode)) {
-			classBytes = writeClass(self, classNode);
-			classNode = readClass(self, name, classBytes);
-		}
-		Mixout.TransformEvent.POST_MIXIN.forEach(event -> event.transform(name, classNode));
+		LOGGER.info( "Hello from hacked" );
 		return classBytes;
 	}
-	
+
 	public static ClassNode readClass(TreeTransformer self, String className, byte[] basicClass) {
 		return (ClassNode) readClass.invoke(self, className, basicClass);
 	}
-	
+
 	public static byte[] writeClass(TreeTransformer self, ClassNode classNode) {
 		return (byte[]) writeClass.invoke(self, classNode);
 	}
-	
+
 	public static MixinProcessor getProcessor(MixinTransformer self) {
 		return (MixinProcessor) processorField.get(self);
 	}
-	
+
 	static {
 		readClass = Methods.of(TreeTransformer.class, "readClass", String.class, byte[].class);
 		readClass.setAccessible(true);

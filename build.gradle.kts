@@ -22,7 +22,7 @@ repositories {
 		name = "TerraformersMC"
 		url = uri("https://maven.terraformersmc.com/")
 	}
-	
+
 	maven {
 		name = "Modrinth"
 		url = uri("https://api.modrinth.com/maven")
@@ -30,12 +30,12 @@ repositories {
 			includeGroup("maven.modrinth")
 		}
 	}
-	
+
 	maven {
 		name = "auoeke Maven"
 		url = uri("https://maven.auoeke.net")
 	}
-	
+
 	maven {
 		name = "ENDERZOMBI102 Maven"
 		url = uri("https://repsy.io/mvn/enderzombi102/mc")
@@ -59,23 +59,26 @@ dependencies {
 	// Quilted Fabric API will automatically pull in the correct QSL version.
 //	modImplementation(libs.quilted.fabric.api)
 	// modImplementation libs.bundles.quilted.fabric.api // If you wish to use Fabric API's deprecated modules, you can replace the above line with this one
-	
+
 	@Suppress("UnstableApiUsage")
 	modImplementationInclude(libs.qsl.base)
-	
+
 	modImplementationInclude("org.ow2.asm", "asm-commons", "9.3")
 	modImplementationInclude("net.auoeke", "reflect", "5.+")
 	modImplementationInclude("net.gudenau.lib", "unsafe", "latest.release")
-	
+
 	modRuntimeOnly("com.terraformersmc", "modmenu", "4.0.0")
 	modRuntimeOnly("maven.modrinth", "wthit", "fabric-5.4.3")
 	modRuntimeOnly("maven.modrinth", "badpackets", "fabric-0.1.2")
 	modRuntimeOnly("maven.modrinth", "emi", "0.2.0+1.19")
-	
+
+
+	implementation( "com.enderzombi102", "EnderLib", "0.2.0")
+
 	modImplementation(libs.quilted.fabric.api)
-	
+
 	annotationProcessor("net.auoeke:uncheck:latest.release")
-	
+
 	add(sourceSets.main.get().getTaskName("mod", JavaPlugin.IMPLEMENTATION_CONFIGURATION_NAME), modImplementationInclude)
 	add(net.fabricmc.loom.util.Constants.Configurations.INCLUDE, modImplementationInclude)
 }
@@ -121,6 +124,7 @@ tasks.jar {
 			"Agent-Class" to "net.cursedmc.yqh.impl.instrumentation.MusicAgent",
 			"Can-Redefine-Classes" to "true",
 			"Can-Retransform-Classes" to "true",
+			"Can-Set-Native-Method-Prefix" to "true"
 		)
 	}
 }
@@ -133,7 +137,7 @@ publishing {
 			from(components["java"])
 		}
 	}
-	
+
 	// See https://docs.gradle.org/current/userguide/publishing_maven.html for information on how to set up publishing.
 	repositories {
 		// Add repositories to publish to here.

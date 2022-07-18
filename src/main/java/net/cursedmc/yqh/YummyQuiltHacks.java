@@ -1,9 +1,9 @@
 package net.cursedmc.yqh;
 
-import com.sun.tools.attach.VirtualMachine;
-import net.auoeke.reflect.Accessor;
-import net.cursedmc.yqh.api.entrypoints.PreMixin;
+import com.enderzombi102.enderlib.RuntimeUtil;
 import net.devtech.grossfabrichacks.unsafe.UnsafeUtil;
+import net.minecraft.entity.EquipmentSlot;
+import net.minecraft.server.network.ServerPlayerEntity;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.quiltmc.loader.api.LanguageAdapter;
@@ -11,30 +11,37 @@ import org.quiltmc.loader.api.ModContainer;
 import org.quiltmc.loader.api.QuiltLoader;
 import org.quiltmc.loader.impl.ModContainerImpl;
 import org.quiltmc.loader.impl.launch.knot.Knot;
+import org.quiltmc.loader.impl.launch.knot.MixinServiceKnot;
 import org.quiltmc.loader.impl.metadata.qmj.AdapterLoadableClassEntry;
+import org.spongepowered.asm.mixin.transformer.IMixinTransformer;
 
 import java.util.Collection;
-import java.util.Map;
+
+import static com.enderzombi102.enderlib.reflection.Getters.getStatic;
 
 public class YummyQuiltHacks implements LanguageAdapter {
 	public static final ClassLoader UNSAFE_LOADER;
-	
+
 	public static boolean isMixinLoaded = false;
-	
+
 	@Override
 	public native <T> T create(ModContainer mod, String value, Class<T> type);
-	
+
 	public static final Logger LOGGER = LogManager.getLogger("YummyQuiltHacks");
-	
+
 	static {
 		ClassLoader appLoader = Knot.class.getClassLoader();
-		Accessor.<Map<String, String>>getReference(Class.forName("jdk.internal.misc.VM"), "savedProps").put("jdk.attach.allowAttachSelf", "true");
-		
-		// todo: add dev-env support
-		VirtualMachine vm = VirtualMachine.attach(String.valueOf(ProcessHandle.current().pid()));
-		String jarPath = YummyQuiltHacks.class.getProtectionDomain().getCodeSource().getLocation().getPath();
-		vm.loadAgent(jarPath);
-		
+
+		RuntimeUtil.attachAgent(
+			RuntimeUtil.findJar(
+				YummyQuiltHacks.class,
+				"yqh",
+				QuiltLoader.getModContainer( "yqh" ).orElseThrow().metadata().version().raw()
+			)
+		);
+
+		var transformer = getStatic( MixinServiceKnot.class, "transformer", IMixinTransformer.class );
+
 		final String[] classes = {
 				"net.gudenau.lib.unsafe.Unsafe",
 				"net.cursedmc.yqh.api.instrumentation.Music",
@@ -42,18 +49,18 @@ public class YummyQuiltHacks implements LanguageAdapter {
 				"net.devtech.grossfabrichacks.unsafe.UnsafeUtil",
 				"net.devtech.grossfabrichacks.unsafe.UnsafeUtil$FirstInt",
 		};
-		
+
 		for (String className : classes) {
 			Class<?> klass = appLoader.loadClass(className);
 			UnsafeUtil.initializeClass(klass);
 		}
-		
+
 		LOGGER.info("Loaded classes with app loader");
-		
+
 		UNSAFE_LOADER = UnsafeUtil.defineAndInitializeAndUnsafeCast(YummyQuiltHacks.class.getClassLoader(), "org.quiltmc.loader.impl.launch.knot.UnsafeKnotClassLoader", appLoader);
-		
+
 		LOGGER.fatal("Quilt has been successfully pwned >:3");
-		
+
 		//noinspection unchecked
 		for (ModContainerImpl mod : (Collection<ModContainerImpl>) (Collection<?>) QuiltLoader.getAllMods()) {
 			if (mod.getInternalMeta().getEntrypoints().containsKey("yqh:pre_mixin")) {
