@@ -38,7 +38,7 @@ public class YummyQuiltHacks implements LanguageAdapter {
 		ClassLoader appLoader = Knot.class.getClassLoader();
 		ClassLoader knotLoader = YummyQuiltHacks.class.getClassLoader();
 
-		String jarPath = Objects.requireNonNull( YummyQuiltHacks.class.getClassLoader().getResource( "yummy_agent.jar" ) ).getPath();
+		String jarPath = Objects.requireNonNull(YummyQuiltHacks.class.getClassLoader().getResource( "yummy_agent.jar" )).getPath();
 		// file:/home/tehc/Projects/CursedMC/YummyQuiltHacks/yqh-test/.gradle/quilt-loom-cache/remapped_mods/loom_mappings_1_19_layered_hash_2066822153_v2/net/cursedmc/yqh/0.1.0/yqh-0.1.0.jar!/yummy_agent.jar
 		// /home/tehc/Projects/CursedMC/YummyQuiltHacks/build/resources/main/yummy_agent.jar
 		if (jarPath.startsWith("file:")) {

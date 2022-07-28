@@ -42,9 +42,6 @@ public class YummyQuiltHacksMixinPlugin implements IMixinConfigPlugin {
 	public void postApply(String targetClassName, ClassNode targetClass, String mixinClassName, IMixinInfo mixinInfo) {}
 	
 	static {
-		System.out.println("YummyQuiltHacksMixinPlugin ClassLoader:");
-		System.out.println(YummyQuiltHacksMixinPlugin.class.getClassLoader());
-		
 		Object transformer = MixinEnvironment.getCurrentEnvironment().getActiveTransformer();
 		Object processor = Accessor.getReference(transformer, "processor");
 		UnsafeUtil.unsafeCast(processor, HackedMixinProcessor.class);

@@ -20,9 +20,4 @@ public class HackedMixinProcessor extends MixinProcessor {
 		Mixout.TransformEvent.postMixin(name, targetClassNode);
 		return applied;
 	}
-	
-	static {
-		System.out.println(HackedMixinProcessor.class.getClassLoader());
-		System.out.println(MixinProcessor.class.getClassLoader());
-	}
 }
