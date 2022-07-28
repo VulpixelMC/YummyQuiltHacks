@@ -35,7 +35,6 @@ public class Mixout {
 	}
 
 	static {
-		LOGGER.info(Mixout.class.getClassLoader());
 		LOGGER.info("mixin, mixout. mixin, mixout. /lyr");
 		LOGGER.info("we have truly achieved a sad state of realization, one that encompasses the entire jdk, the minecraft classes.. everything. we have untold power, and with so may come untold consequences. tread lightly, explorer.");
 	}
