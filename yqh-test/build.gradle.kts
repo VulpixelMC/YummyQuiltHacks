@@ -24,7 +24,7 @@ repositories {
 		name = "TerraformersMC"
 		url = uri("https://maven.terraformersmc.com/")
 	}
-
+	
 	maven {
 		name = "Modrinth"
 		url = uri("https://api.modrinth.com/maven")
@@ -32,12 +32,12 @@ repositories {
 			includeGroup("maven.modrinth")
 		}
 	}
-
+	
 	maven {
 		name = "auoeke Maven"
 		url = uri("https://maven.auoeke.net")
 	}
-
+	
 	maven {
 		name = "ENDERZOMBI102 Maven"
 		url = uri("https://repsy.io/mvn/enderzombi102/mc")
@@ -59,7 +59,7 @@ dependencies {
 	modImplementation("net.cursedmc:yqh:latest.release")
 	
 	annotationProcessor("net.auoeke:uncheck:latest.release")
-
+	
 	add(sourceSets.main.get().getTaskName("mod", JavaPlugin.IMPLEMENTATION_CONFIGURATION_NAME), modImplementationInclude)
 	add(net.fabricmc.loom.util.Constants.Configurations.INCLUDE, modImplementationInclude)
 }
@@ -101,9 +101,7 @@ tasks.withType<AbstractArchiveTask> {
 
 // Configure the maven publication
 publishing {
-	publications {
-	
-	}
+	publications {}
 	
 	// See https://docs.gradle.org/current/userguide/publishing_maven.html for information on how to set up publishing.
 	repositories {
