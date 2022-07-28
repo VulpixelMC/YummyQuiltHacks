@@ -26,10 +26,7 @@
 				"versions": ">=0.17.0-"
 			},
 			"quilted_fabric_api",
-			{
-				"id": "minecraft",
-				"versions": ">=1.19"
-			}
+			"minecraft"
 		],
 		"language_adapters": {
 			"yqh": "net.cursedmc.yqh.YummyQuiltHacks"
