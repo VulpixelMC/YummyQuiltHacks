@@ -55,10 +55,12 @@ dependencies {
 		addLayer(quiltMappings.mappings("org.quiltmc:quilt-mappings:${libs.versions.quilt.mappings.get()}:v2"))
 	})
 	modImplementation(libs.quilt.loader)
-
-	implementation( rootProject )
+	
+	modImplementation("net.cursedmc:yqh:latest.release")
 
 	modRuntimeOnly(libs.quilted.fabric.api)
+	
+	annotationProcessor("net.auoeke:uncheck:latest.release")
 
 	add(sourceSets.main.get().getTaskName("mod", JavaPlugin.IMPLEMENTATION_CONFIGURATION_NAME), modImplementationInclude)
 	add(net.fabricmc.loom.util.Constants.Configurations.INCLUDE, modImplementationInclude)
@@ -66,7 +68,7 @@ dependencies {
 
 tasks.processResources {
 	inputs.property("version", version)
-
+	
 	filesMatching("quilt.mod.json") {
 		expand("version" to version)
 	}
@@ -82,11 +84,11 @@ java {
 	// Still required by IDEs such as Eclipse and Visual Studio Code
 	sourceCompatibility = JavaVersion.VERSION_17
 	targetCompatibility = JavaVersion.VERSION_17
-
+	
 	// Loom will automatically attach sourcesJar to a RemapSourcesJar task and to the "build" task if it is present.
 	// If you remove this line, sources will not be generated.
 	withSourcesJar()
-
+	
 	// If this mod is going to be a library, then it should also generate Javadocs in order to aid with developement.
 	// Uncomment this line to generate them.
 	// withJavadocJar()
@@ -102,9 +104,9 @@ tasks.withType<AbstractArchiveTask> {
 // Configure the maven publication
 publishing {
 	publications {
-
+	
 	}
-
+	
 	// See https://docs.gradle.org/current/userguide/publishing_maven.html for information on how to set up publishing.
 	repositories {
 		// Add repositories to publish to here.

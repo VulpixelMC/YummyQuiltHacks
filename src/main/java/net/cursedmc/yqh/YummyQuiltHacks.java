@@ -1,6 +1,6 @@
 package net.cursedmc.yqh;
 
-import com.enderzombi102.enderlib.RuntimeUtil;
+import com.enderzombi102.enderlib.BetterRuntimeUtil;
 import net.auoeke.reflect.ClassDefiner;
 import net.auoeke.reflect.Classes;
 import net.cursedmc.yqh.api.mixin.Mixout;
@@ -47,17 +47,18 @@ public class YummyQuiltHacks implements LanguageAdapter {
 				// sanitize path
 				jarPath = jarPath.replaceAll("file:|!/yummy_agent\\.jar", "");
 				jarPath = URLDecoder.decode(jarPath, StandardCharsets.UTF_8);
-
+				
+				
 				// find yummy_agent.jar inside jar and make a temp jar of it
 				JarFile jar = new JarFile(FileUtils.getFile(jarPath));
 				byte[] jarBytes = jar.getInputStream(jar.getJarEntry("yummy_agent.jar") ).readAllBytes();
 				jar.close();
 				File tempJar = File.createTempFile("tmp_", null);
 				FileUtils.writeByteArrayToFile(tempJar, jarBytes);
-
-				RuntimeUtil.attachAgent(tempJar.getAbsolutePath());
+				
+				BetterRuntimeUtil.attachAgent(tempJar.getAbsolutePath());
 			} else {
-				RuntimeUtil.attachAgent(jarPath.replaceFirst("/", ""));
+				BetterRuntimeUtil.attachAgent(jarPath);
 			}
 		} catch (IOException ignored) {}
 

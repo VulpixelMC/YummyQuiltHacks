@@ -87,6 +87,10 @@ tasks.processResources {
 	filesMatching("quilt.mod.json") {
 		expand("version" to version)
 	}
+	
+	from("src/main/java") {
+		include("**/LICENSE")
+	}
 
 	dependsOn("copyAgentJar")
 }
