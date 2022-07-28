@@ -6,6 +6,7 @@ import net.auoeke.reflect.Classes;
 import net.cursedmc.yqh.api.mixin.Mixout;
 import net.devtech.grossfabrichacks.unsafe.UnsafeUtil;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.SystemUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.quiltmc.loader.api.LanguageAdapter;
@@ -56,6 +57,10 @@ public class YummyQuiltHacks implements LanguageAdapter {
 			
 			BetterRuntimeUtil.attachAgent(tempJar.getAbsolutePath());
 		} else {
+			if (SystemUtils.IS_OS_WINDOWS) {
+				jarPath = jarPath.replaceFirst("/", ""); // windows bad
+			}
+			
 			BetterRuntimeUtil.attachAgent(jarPath);
 		}
 
