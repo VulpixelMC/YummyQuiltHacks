@@ -54,8 +54,7 @@ public class UnsafeKnotClassLoader extends KnotClassLoader {
 		}
 	}
 	
-	@Override
-	public Class<?> loadClass(String name, boolean resolve) {
+	public Class<?> loadClass(String name, boolean resolve, boolean allowFromParent) {
 		synchronized (this.getClassLoadingLock(name)) {
 			Class<?> klass = classes.get(name);
 			
@@ -64,7 +63,7 @@ public class UnsafeKnotClassLoader extends KnotClassLoader {
 				
 				if (klass == null) {
 					if (!name.startsWith("java.")) {
-						byte[] input = delegate.getPostMixinClassByteArray(name, false);
+						byte[] input = delegate.getPostMixinClassByteArray(name, allowFromParent);
 						
 						if (input != null) {
 							KnotClassDelegate.Metadata metadata = delegate.getMetadata(name, parent.getResource(LoaderUtil.getClassFileName(name)));
@@ -97,6 +96,11 @@ public class UnsafeKnotClassLoader extends KnotClassLoader {
 			
 			return klass;
 		}
+	}
+	
+	@Override
+	public Class<?> loadClass(String name, boolean resolve) {
+		return this.loadClass(name, resolve, false);
 	}
 	
 	static {
