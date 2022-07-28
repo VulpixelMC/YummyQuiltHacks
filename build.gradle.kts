@@ -85,7 +85,7 @@ tasks.processResources {
 	inputs.property("version", version)
 
 	filesMatching("quilt.mod.json") {
-		expand("version" to version)
+		expand("group" to group, "id" to modId, "version" to version)
 	}
 	
 	from("src/main/java") {

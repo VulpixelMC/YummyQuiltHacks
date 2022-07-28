@@ -57,8 +57,6 @@ dependencies {
 	modImplementation(libs.quilt.loader)
 	
 	modImplementation("net.cursedmc:yqh:latest.release")
-
-	modRuntimeOnly(libs.quilted.fabric.api)
 	
 	annotationProcessor("net.auoeke:uncheck:latest.release")
 

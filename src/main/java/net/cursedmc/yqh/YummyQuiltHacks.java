@@ -3,6 +3,7 @@ package net.cursedmc.yqh;
 import com.enderzombi102.enderlib.BetterRuntimeUtil;
 import net.auoeke.reflect.ClassDefiner;
 import net.auoeke.reflect.Classes;
+import net.cursedmc.yqh.api.instrumentation.Music;
 import net.cursedmc.yqh.api.mixin.Mixout;
 import net.devtech.grossfabrichacks.unsafe.UnsafeUtil;
 import org.apache.commons.io.FileUtils;
@@ -27,8 +28,6 @@ import static com.enderzombi102.enderlib.SafeUtils.doSafely;
 
 public class YummyQuiltHacks implements LanguageAdapter {
 	public static final ClassLoader UNSAFE_LOADER;
-	
-	public static boolean isMixinLoaded = false;
 	
 	@Override
 	public native <T> T create(ModContainer mod, String value, Class<T> type);
@@ -92,6 +91,7 @@ public class YummyQuiltHacks implements LanguageAdapter {
 		
 		UNSAFE_LOADER = UnsafeUtil.defineAndInitializeAndUnsafeCast(knotLoader, "org.quiltmc.loader.impl.launch.knot.UnsafeKnotClassLoader", appLoader);
 		
+		UnsafeUtil.initializeClass(Music.class);
 		UnsafeUtil.initializeClass(Mixout.class);
 		
 		LOGGER.fatal("Quilt has been successfully pwned >:3");

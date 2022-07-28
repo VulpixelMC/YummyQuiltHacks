@@ -1,21 +1,15 @@
 package net.cursedmc.yqh.mixin;
 
 import net.auoeke.reflect.Accessor;
-import net.cursedmc.yqh.YummyQuiltHacks;
 import net.cursedmc.yqh.api.entrypoints.PrePreLaunch;
 import net.devtech.grossfabrichacks.unsafe.UnsafeUtil;
 import org.objectweb.asm.tree.ClassNode;
 import org.quiltmc.loader.impl.entrypoint.EntrypointUtils;
-import org.quiltmc.loader.impl.launch.knot.UnsafeKnotClassLoader;
 import org.spongepowered.asm.mixin.MixinEnvironment;
 import org.spongepowered.asm.mixin.extensibility.IMixinConfigPlugin;
 import org.spongepowered.asm.mixin.extensibility.IMixinInfo;
 import org.spongepowered.asm.mixin.transformer.HackedMixinProcessor;
-import org.spongepowered.asm.mixin.transformer.ext.Extensions;
-import org.spongepowered.asm.mixin.transformer.ext.IExtension;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Set;
 
@@ -48,7 +42,8 @@ public class YummyQuiltHacksMixinPlugin implements IMixinConfigPlugin {
 	public void postApply(String targetClassName, ClassNode targetClass, String mixinClassName, IMixinInfo mixinInfo) {}
 	
 	static {
-		YummyQuiltHacks.isMixinLoaded = true;
+		System.out.println("YummyQuiltHacksMixinPlugin ClassLoader:");
+		System.out.println(YummyQuiltHacksMixinPlugin.class.getClassLoader());
 		
 		Object transformer = MixinEnvironment.getCurrentEnvironment().getActiveTransformer();
 		Object processor = Accessor.getReference(transformer, "processor");

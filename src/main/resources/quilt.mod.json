@@ -1,8 +1,8 @@
 {
 	"schema_version": 1,
 	"quilt_loader": {
-		"group": "net.cursedmc",
-		"id": "yqh",
+		"group": "${group}",
+		"id": "${id}",
 		"version": "${version}",
 		"metadata": {
 			"license": "MPL-2.0",
@@ -24,6 +24,7 @@
 				"id": "quilt_loader",
 				"versions": ">=0.17.0-"
 			},
+			"quilted_fabric_api",
 			{
 				"id": "minecraft",
 				"versions": ">=1.19"
