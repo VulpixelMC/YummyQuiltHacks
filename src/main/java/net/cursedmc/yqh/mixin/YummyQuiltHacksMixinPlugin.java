@@ -1,5 +1,6 @@
 package net.cursedmc.yqh.mixin;
 
+import net.auoeke.reflect.Accessor;
 import net.cursedmc.yqh.YummyQuiltHacks;
 import net.cursedmc.yqh.api.entrypoints.PrePreLaunch;
 import net.devtech.grossfabrichacks.unsafe.UnsafeUtil;
@@ -50,11 +51,8 @@ public class YummyQuiltHacksMixinPlugin implements IMixinConfigPlugin {
 		YummyQuiltHacks.isMixinLoaded = true;
 		
 		Object transformer = MixinEnvironment.getCurrentEnvironment().getActiveTransformer();
-		Class<?> mixinTransformerClass = Class.forName("org.spongepowered.asm.mixin.transformer.MixinTransformer");
-		Field processorField = mixinTransformerClass.getDeclaredField("processor");
-		processorField.setAccessible(true);
-		Object processor = processorField.get(transformer);
-		UnsafeUtil.unsafeCast(processor, Class.forName("org.spongepowered.asm.mixin.transformer.HackedMixinProcessor", true, UnsafeKnotClassLoader.appLoader));
+		Object processor = Accessor.getReference(transformer, "processor");
+		UnsafeUtil.unsafeCast(processor, HackedMixinProcessor.class);
 		
 		EntrypointUtils.invoke("yqh:pre_pre_launch", PrePreLaunch.class, PrePreLaunch::onPrePreLaunch);
 	}

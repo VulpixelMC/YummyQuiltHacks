@@ -15,13 +15,20 @@ import org.quiltmc.loader.api.ModContainer;
 import org.quiltmc.loader.api.QuiltLoader;
 import org.quiltmc.loader.impl.ModContainerImpl;
 import org.quiltmc.loader.impl.launch.knot.Knot;
+import org.quiltmc.loader.impl.launch.knot.UnsafeKnotClassLoader;
 import org.quiltmc.loader.impl.metadata.qmj.AdapterLoadableClassEntry;
 
 import java.io.File;
 import java.io.InputStream;
 import java.lang.instrument.Instrumentation;
+import java.net.URL;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
+import java.security.AllPermission;
+import java.security.CodeSource;
+import java.security.Permissions;
+import java.security.ProtectionDomain;
+import java.security.cert.Certificate;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Objects;
@@ -69,44 +76,27 @@ public class YummyQuiltHacks implements LanguageAdapter {
 				"net.gudenau.lib.unsafe.Unsafe",
 				"net.devtech.grossfabrichacks.unsafe.UnsafeUtil",
 				"net.devtech.grossfabrichacks.unsafe.UnsafeUtil$FirstInt",
-				"net.auoeke.reflect.Classes",
-				"net.auoeke.reflect.Types",
-				"net.auoeke.reflect.Fields",
-				"net.auoeke.reflect.Methods",
-				"net.auoeke.reflect.Methods$MethodKey",
-				"net.auoeke.reflect.Flags",
-				"net.auoeke.reflect.StackFrames",
-				"net.auoeke.reflect.ClassDefiner",
-				"net.auoeke.reflect.Invoker",
-				"net.auoeke.reflect.Pointer",
-				"net.auoeke.reflect.Accessor",
-				"net.auoeke.reflect.Reflect",
-				"net.auoeke.reflect.CacheMap",
 		};
 		
 		for (String name : manualLoad) {
-			if ((name.equals("net.gudenau.lib.unsafe.Unsafe") || name.startsWith("net.auoeke.reflect")) && QuiltLoader.isDevelopmentEnvironment()) {
+			if (name.equals("net.gudenau.lib.unsafe.Unsafe") && QuiltLoader.isDevelopmentEnvironment()) {
 				continue;
 			}
 			
-			byte[] classBytes = Classes.classFile(knotLoader, name);
+			InputStream classStream = knotLoader.getResourceAsStream(name.replace('.', '/').concat(".class"));
 			
-			if (classBytes == null) {
+			if (classStream == null) {
 				LOGGER.warn("Could not find class bytes for class " + name + " in loader " + knotLoader);
 				continue;
 			}
 			
-			ClassDefiner.make()
-					.name(name)
-					.classFile(classBytes)
-					.loader(appLoader)
-					.protectionDomain(YummyQuiltHacks.class.getProtectionDomain())
-					.define();
+			byte[] classBytes = classStream.readAllBytes();
+			classStream.close();
+			
+			UnsafeUtil.defineClass(name, classBytes, appLoader, YummyQuiltHacks.class.getProtectionDomain());
 		}
 		
-		UNSAFE_LOADER = UnsafeUtil.defineAndInitializeAndUnsafeCast(knotLoader, "org.quiltmc.loader.impl.launch.knot.UnsafeKnotClassLoader", appLoader);
-		
-		UnsafeUtil.initializeClass(Mixout.class);
+		UNSAFE_LOADER = UnsafeUtil.defineAndInitializeAndUnsafeCast(knotLoader, "org.quiltmc.loader.impl.launch.knot.UnsafeKnotClassLoader", knotLoader.getClass().getClassLoader());
 		
 		LOGGER.fatal("Quilt has been successfully pwned >:3");
 		
@@ -114,11 +104,7 @@ public class YummyQuiltHacks implements LanguageAdapter {
 		for (ModContainerImpl mod : (Collection<ModContainerImpl>) (Collection<?>) QuiltLoader.getAllMods()) {
 			if (mod.getInternalMeta().getEntrypoints().containsKey("yqh:pre_mixin")) {
 				for (AdapterLoadableClassEntry entry : mod.getInternalMeta().getEntrypoints().get("yqh:pre_mixin")) {
-					Class<?> preMixinClass = ClassDefiner.make()
-							.classFile(entry.getValue())
-							.name(entry.getValue())
-							.loader(appLoader)
-							.define();
+					Class<?> preMixinClass = UnsafeUtil.findAndDefineAndInitializeClass(entry.getValue(), appLoader);
 					Object preMixin = preMixinClass.getConstructor().newInstance();
 					preMixin.getClass().getMethod("onPreMixin").invoke(preMixin);
 				}

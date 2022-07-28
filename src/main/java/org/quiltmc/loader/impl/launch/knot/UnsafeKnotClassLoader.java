@@ -2,22 +2,17 @@ package org.quiltmc.loader.impl.launch.knot;
 
 import it.unimi.dsi.fastutil.objects.Object2ReferenceMap;
 import it.unimi.dsi.fastutil.objects.Object2ReferenceOpenHashMap;
-import net.auoeke.reflect.ClassDefiner;
-import net.auoeke.reflect.Classes;
-import net.cursedmc.yqh.YummyQuiltHacks;
+import net.cursedmc.yqh.api.mixin.Mixout;
 import net.devtech.grossfabrichacks.unsafe.UnsafeUtil;
 import net.fabricmc.api.EnvType;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.quiltmc.loader.api.QuiltLoader;
 import org.quiltmc.loader.impl.game.GameProvider;
 import org.quiltmc.loader.impl.util.LoaderUtil;
+import org.spongepowered.asm.mixin.transformer.HackedMixinProcessor;
 
-import java.io.InputStream;
-import java.net.URL;
 import java.net.URLClassLoader;
 import java.security.CodeSource;
-import java.util.Enumeration;
 
 /**
  * makes stuff in the app ClassLoader available to anything loaded by KnotClassLoader
@@ -26,9 +21,10 @@ import java.util.Enumeration;
 public class UnsafeKnotClassLoader extends KnotClassLoader {
 	public static final ClassLoader appLoader = UnsafeKnotClassLoader.class.getClassLoader();
 	public static final ClassLoader knotLoader = Thread.currentThread().getContextClassLoader();
-	public static final URLClassLoader urlLoader = (URLClassLoader) knotLoader.getParent();
+	public static final URLClassLoader parent = (URLClassLoader) knotLoader.getParent();
 	public static final Logger LOGGER = LogManager.getLogger("YummyQuiltHacks/UnsafeKnotClassLoader");
 	public static final Object2ReferenceMap<String, Class<?>> classes = new Object2ReferenceOpenHashMap<>();
+	public static final KnotClassDelegate delegate = ((KnotClassLoader) knotLoader).getDelegate();
 	
 	UnsafeKnotClassLoader(boolean isDevelopment, EnvType envType, GameProvider provider) {
 		super(isDevelopment, envType, provider);
@@ -44,7 +40,7 @@ public class UnsafeKnotClassLoader extends KnotClassLoader {
 	
 	@Override
 	public Class<?> defineClassFwd(String name, byte[] b, int off, int len, CodeSource cs) {
-		Class<?> klass = UnsafeUtil.defineClass(name, b, off, len, knotLoader, null);
+		Class<?> klass = UnsafeUtil.defineClass(name, b, off, len, this, null);
 		
 		classes.put(name, klass);
 		
@@ -53,25 +49,25 @@ public class UnsafeKnotClassLoader extends KnotClassLoader {
 	
 	@Override
 	public boolean isClassLoaded(String name) {
-		synchronized (this.getClassLoadingLock(name)) {
-			return this.findLoadedClass(name) != null || classes.containsKey(name);
+		synchronized (super.getClassLoadingLock(name)) {
+			return super.findLoadedClass(name) != null || classes.containsKey(name);
 		}
 	}
 	
 	@Override
-	protected Class<?> loadClass(String name, boolean resolve) {
+	public Class<?> loadClass(String name, boolean resolve) {
 		synchronized (this.getClassLoadingLock(name)) {
 			Class<?> klass = classes.get(name);
 			
 			if (klass == null) {
-				klass = super.findLoadedClass(name);
+				klass = this.findLoadedClass(name);
 				
 				if (klass == null) {
 					if (!name.startsWith("java.")) {
-						byte[] input = getDelegate().getPostMixinClassByteArray(name, false);
+						byte[] input = delegate.getPostMixinClassByteArray(name, false);
 						
 						if (input != null) {
-							KnotClassDelegate.Metadata metadata = getDelegate().getMetadata(name, this.getResource(LoaderUtil.getClassFileName(name)));
+							KnotClassDelegate.Metadata metadata = delegate.getMetadata(name, parent.getResource(LoaderUtil.getClassFileName(name)));
 							
 							int pkgDelimiterPos = name.lastIndexOf('.');
 							
@@ -109,6 +105,9 @@ public class UnsafeKnotClassLoader extends KnotClassLoader {
 		classes.put("org.quiltmc.loader.impl.launch.knot.KnotClassLoader", KnotClassLoader.class);
 		classes.put("org.quiltmc.loader.impl.launch.knot.UnsafeKnotClassLoader", UnsafeKnotClassLoader.class);
 		
+		classes.put("net.devtech.grossfabrichacks.unsafe.UnsafeUtil", UnsafeUtil.class);
+		classes.put("net.devtech.grossfabrichacks.unsafe.UnsafeUtil$FirstInt", UnsafeUtil.FirstInt.class);
+		
 		String[] manualLoad = {
 				"net.cursedmc.yqh.api.instrumentation.Music",
 				"net.cursedmc.yqh.api.instrumentation.Music$1",
@@ -120,24 +119,7 @@ public class UnsafeKnotClassLoader extends KnotClassLoader {
 		};
 		
 		for (String name : manualLoad) {
-			byte[] classBytes = Classes.classFile(knotLoader, name);
-			
-			Class<?> klass = ClassDefiner.make()
-					.name(name)
-					.classFile(classBytes)
-					.loader(appLoader)
-					.protectionDomain(UnsafeKnotClassLoader.class.getProtectionDomain())
-					.define();
-			classes.put(name, klass);
-		}
-		
-		String[] manualLoadKnot = {
-				"net.cursedmc.yqh.api.util.MapUtils",
-		};
-		
-		for (String name : manualLoadKnot) {
-			Class<?> klass = knotLoader.loadClass(name);
-			classes.put(name, klass);
+			classes.put(name, UnsafeUtil.findAndDefineClass(name, appLoader));
 		}
 		
 		LOGGER.info("Loaded classes with app loader");

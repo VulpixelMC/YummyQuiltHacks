@@ -1,13 +1,8 @@
 package net.cursedmc.yqh.api.mixin;
 
-import ca.rttv.ASMFormatParser;
-import net.cursedmc.yqh.api.instrumentation.Music;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.objectweb.asm.tree.ClassNode;
-import org.objectweb.asm.tree.MethodNode;
-import org.spongepowered.asm.mixin.MixinEnvironment;
-import org.spongepowered.asm.mixin.transformer.ext.IExtension;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -40,7 +35,6 @@ public class Mixout {
 	}
 	
 	static {
-		LOGGER.info(Mixout.class.getClassLoader());
 		LOGGER.info("mixin, mixout. mixin, mixout. /lyr");
 		LOGGER.info("we have truly achieved a sad state of realization, one that encompasses the entire jdk, the minecraft classes.. everything. we have untold power, and with so may come untold consequences. tread lightly, explorer.");
 	}

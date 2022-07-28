@@ -1,6 +1,8 @@
 package org.spongepowered.asm.mixin.transformer;
 
+import net.auoeke.reflect.Accessor;
 import net.cursedmc.yqh.api.mixin.Mixout;
+import net.devtech.grossfabrichacks.unsafe.UnsafeUtil;
 import org.objectweb.asm.tree.ClassNode;
 import org.spongepowered.asm.mixin.MixinEnvironment;
 import org.spongepowered.asm.mixin.transformer.ext.Extensions;
