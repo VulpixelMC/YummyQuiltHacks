@@ -62,7 +62,7 @@ public class YummyQuiltHacks implements LanguageAdapter {
 			
 			BetterRuntimeUtil.attachAgent(jarPath);
 		}
-
+		
 		final String[] manualLoad = {
 				"net.gudenau.lib.unsafe.Unsafe",
 				"net.devtech.grossfabrichacks.unsafe.UnsafeUtil",
