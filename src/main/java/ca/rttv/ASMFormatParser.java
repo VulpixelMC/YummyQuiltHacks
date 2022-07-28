@@ -17,6 +17,7 @@ public class ASMFormatParser {
 	
 	private static final String PLACEHOLDER = "!YQH!";
 	
+	// fixme: fix mapping stuff
 	/**
 	 * Finds any unmapped {@code net.minecraft.*} classes/methods/fields and maps them.
 	 * @param unmapped the unmapped string
@@ -53,7 +54,6 @@ public class ASMFormatParser {
 	
 	public static InsnList parseInstructions(String unmapped, MethodNode method, boolean map) {
 		String mapped = map ? mapString(unmapped) : unmapped; // the mapped string
-		System.out.println(mapped);
 		
 		InsnList list = new InsnList();
 		Map<String, LabelNode> labels = new HashMap<>();
