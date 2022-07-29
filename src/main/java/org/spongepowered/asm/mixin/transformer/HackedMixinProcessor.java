@@ -15,9 +15,12 @@ public class HackedMixinProcessor extends MixinProcessor {
 	
 	@Override
 	synchronized boolean applyMixins(MixinEnvironment environment, String name, ClassNode targetClassNode) {
-		Mixout.TransformEvent.preMixin(name, targetClassNode);
-		boolean applied = super.applyMixins(environment, name, targetClassNode);
-		Mixout.TransformEvent.postMixin(name, targetClassNode);
-		return applied;
+		boolean shouldApply;
+		
+		shouldApply = Mixout.TransformEvent.preMixin(name, targetClassNode);
+		shouldApply |= super.applyMixins(environment, name, targetClassNode);
+		shouldApply |= Mixout.TransformEvent.postMixin(name, targetClassNode);
+		
+		return shouldApply;
 	}
 }
