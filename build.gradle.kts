@@ -73,7 +73,7 @@ dependencies {
 	
 	// QSL is not a complete API; You will need Quilted Fabric API to fill in the gaps.
 	// Quilted Fabric API will automatically pull in the correct QSL version.
-	modImplementation(libs.quilted.fabric.api)
+	modRuntimeOnly(libs.quilted.fabric.api)
 	
 	annotationProcessor("net.auoeke:uncheck:latest.release")
 	

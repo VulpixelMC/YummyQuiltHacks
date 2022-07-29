@@ -25,7 +25,6 @@
 				"id": "quilt_loader",
 				"versions": ">=0.17.0-"
 			},
-			"quilted_fabric_api",
 			"minecraft"
 		],
 		"language_adapters": {

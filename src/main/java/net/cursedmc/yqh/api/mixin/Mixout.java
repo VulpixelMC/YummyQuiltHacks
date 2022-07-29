@@ -25,12 +25,14 @@ public class Mixout {
 			POST_MIXIN.add(callback);
 		}
 		
-		static void preMixin(String name, ClassNode cn) {
+		static boolean preMixin(String name, ClassNode cn) {
 			PRE_MIXIN.forEach(callback -> callback.transform(name, cn));
+			return PRE_MIXIN.isEmpty();
 		}
 		
-		static void postMixin(String name, ClassNode cn) {
+		static boolean postMixin(String name, ClassNode cn) {
 			POST_MIXIN.forEach(callback -> callback.transform(name, cn));
+			return POST_MIXIN.isEmpty();
 		}
 	}
 	
