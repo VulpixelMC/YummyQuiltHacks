@@ -9,7 +9,11 @@ import org.apache.logging.log4j.Logger;
 import org.quiltmc.loader.impl.game.GameProvider;
 import org.quiltmc.loader.impl.util.LoaderUtil;
 
+import java.net.URL;
 import java.net.URLClassLoader;
+import java.security.CodeSource;
+import java.security.PermissionCollection;
+import java.util.Enumeration;
 
 /**
  * makes stuff in the app ClassLoader available to anything loaded by KnotClassLoader
@@ -25,6 +29,41 @@ public class UnsafeKnotClassLoader extends KnotClassLoader {
 	
 	UnsafeKnotClassLoader(final boolean isDevelopment, final EnvType envType, final GameProvider provider) {
 		super(isDevelopment, envType, provider);
+	}
+	
+	@Override
+	public Class<?> findClass(final String name) {
+		return super.findClass(name);
+	}
+	
+	@Override
+	public PermissionCollection getPermissions(final CodeSource codesource) {
+		return super.getPermissions(codesource);
+	}
+	
+	@Override
+	public Class<?> findClass(final String moduleName, final String name) {
+		return super.findClass(moduleName, name);
+	}
+	
+	@Override
+	public URL findResource(final String moduleName, final String name) {
+		return super.findResource(moduleName, name);
+	}
+	
+	@Override
+	public Enumeration<URL> findResources(final String name) {
+		return super.findResources(name);
+	}
+	
+	@Override
+	public Package[] getPackages() {
+		return super.getPackages();
+	}
+	
+	@Override
+	public String findLibrary(@SuppressWarnings("SpellCheckingInspection") final String libname) {
+		return super.findLibrary(libname);
 	}
 	
 	@Override
