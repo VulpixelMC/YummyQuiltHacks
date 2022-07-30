@@ -14,12 +14,14 @@ import static org.objectweb.asm.Opcodes.*;
 
 //https://gist.github.com/RealRTTV/6d4576998f3780c9766a63caa5ab9ae1
 public class ASMFormatParser {
-
+	
 	private static final String PLACEHOLDER = "!YQH!";
-
+	
 	// fixme: fix mapping stuff
+	
 	/**
 	 * Finds any unmapped {@code net.minecraft.*} classes/methods/fields and maps them.
+	 *
 	 * @param unmapped the unmapped string
 	 * @return the mapped string
 	 */
@@ -30,57 +32,57 @@ public class ASMFormatParser {
 		while (methodMatcher.find()) {
 			unmapped = (unmapped.replace(methodMatcher.group(), MapUtils.mappedClass(methodMatcher.group(1).replaceAll("/", ".")).replaceAll("\\.", "/") + '.' + MapUtils.mappedMethod(methodMatcher.group(1).replaceAll("/", "."), methodMatcher.group(2), methodMatcher.group(3)) + methodMatcher.group(3))).replaceAll("net/minecraft", "net/" + PLACEHOLDER);
 		}
-
+		
 		// map fields
 		final Pattern fieldPattern = Pattern.compile("(net/minecraft/.+\\.([^(\\s]+)) (\\[?(?:[BCDFIJSZ]|(?:L.+;)))");
 		final Matcher fieldMatcher = fieldPattern.matcher(unmapped);
 		while (fieldMatcher.find()) {
 			unmapped = unmapped.replace(fieldMatcher.group(), MapUtils.mappedField(fieldMatcher.group(1).replaceAll("/", "."), fieldMatcher.group(2), fieldMatcher.group(3)).replaceAll("\\.(?![A-Za-z]+[( ])", "/").replaceAll("net/minecraft", "net/" + PLACEHOLDER));
 		}
-
+		
 		// map classes
 		final Pattern classPattern = Pattern.compile("net/minecraft/[^;.\\s]+");
 		final Matcher classMatcher = classPattern.matcher(unmapped);
 		while (classMatcher.find()) {
 			unmapped = unmapped.replace(classMatcher.group(), MapUtils.mappedClass(classMatcher.group().replaceAll("/", "."))).replaceAll("\\.(?![A-Za-z]+[( ])", "/");
 		}
-
+		
 		return unmapped.replaceAll("net/" + PLACEHOLDER, "net/minecraft");
 	}
-
+	
 	public static InsnList parseInstructions(final String unmapped, final MethodNode method) {
 		return parseInstructions(unmapped, method, true);
 	}
-
+	
 	public static InsnList parseInstructions(final String unmapped, final MethodNode method, final boolean map) {
 		final String mapped = map ? mapString(unmapped) : unmapped; // the mapped string
-
+		
 		final InsnList list = new InsnList();
 		final Map<String, LabelNode> labels = new HashMap<>();
 		final Map<String, LabelNode> vanillaLabels = new HashMap<>();
-
+		
 		final String[] lines = mapped.split("\n");
-
+		
 		for (final String line : lines) {
 			if (line.matches("[A-Za-z]+:")) {
 				labels.put(line.substring(0, line.length() - 1), new LabelNode());
 			}
 		}
-
+		
 		int count = 0;
 		for (final AbstractInsnNode insn : method.instructions) {
 			if (insn instanceof LineNumberNode lineNumberNode) {
 				vanillaLabels.put(getLabelName(count++), lineNumberNode.start);
 			}
 		}
-
+		
 		for (final String line : lines) {
 			parseInstruction(line, list, labels, vanillaLabels);
 		}
-
+		
 		return list;
 	}
-
+	
 	private static String getLabelName(int num) {
 		final int len = 16;
 		final byte[] characters = new byte[len];
@@ -93,7 +95,7 @@ public class ASMFormatParser {
 		return new String(characters, ++i, len - i, StandardCharsets.US_ASCII);
 		// tks Geolykt ♥
 	}
-
+	
 	private static LabelNode getLabel(String str, final Map<String, LabelNode> labels, final Map<String, LabelNode> vanillaLabels) {
 		if (str.endsWith(":")) {
 			str = str.substring(0, str.length() - 1);
@@ -101,10 +103,10 @@ public class ASMFormatParser {
 		final String otherStr = str;
 		return Optional.ofNullable(labels.get(str)).orElseGet(() -> Optional.ofNullable(vanillaLabels.get(otherStr)).orElseThrow(NodeNotFoundException::new));
 	}
-
+	
 	private static void parseInstruction(final String line, final InsnList list, final Map<String, LabelNode> labels, final Map<String, LabelNode> vanillaLabels) {
 		final String[] words = new String[10]; // seems good enough
-
+		
 		boolean quote = false;
 		int index = 0;
 		StringBuilder sb = new StringBuilder();
@@ -113,20 +115,21 @@ public class ASMFormatParser {
 			if (cur == '"') {
 				quote = !quote;
 			}
-
+			
 			if (cur == ' ' && !quote) {
 				words[index++] = sb.toString();
 				sb = new StringBuilder();
 				continue;
 			}
-
+			
 			sb.append(cur);
 		}
-
+		
 		words[index] = sb.toString();
-
+		
 		switch (words[0]) {
-			case "NOP", "DEFINE" -> {}
+			case "NOP", "DEFINE" -> {
+			}
 			case "ACONST_NULL" -> list.add(new InsnNode(ACONST_NULL));
 			case "ICONST_M1" -> list.add(new InsnNode(ICONST_M1));
 			case "ICONST_0" -> list.add(new InsnNode(ICONST_0));
@@ -258,24 +261,36 @@ public class ASMFormatParser {
 			case "GOTO" -> list.add(new JumpInsnNode(GOTO, getLabel(words[1], labels, vanillaLabels)));
 			case "JSR" -> list.add(new JumpInsnNode(JSR, getLabel(words[1], labels, vanillaLabels)));
 			case "RET" -> list.add(new VarInsnNode(RET, Integer.parseInt(words[1])));
-			case "TABLESWITCH" -> list.add(new TableSwitchInsnNode(Integer.parseInt(words[1].replaceAll("range\\[|]", "").split(":")[0]), Integer.parseInt(words[1].replaceAll("range\\[|]", "").split(":")[1]), getLabel(words[3].replaceAll("default\\[", "").replaceAll("]", ""), labels, vanillaLabels), getLabels(words[2], labels, vanillaLabels)));
-			case "LOOKUPSWITCH" -> list.add(new LookupSwitchInsnNode(getLabel(words[2].replaceAll("default\\[", "").replaceAll("]", ""), labels, vanillaLabels), getLookupKeys(words[1]), getLabelKeys(words[1], labels, vanillaLabels)));
+			case "TABLESWITCH" ->
+					list.add(new TableSwitchInsnNode(Integer.parseInt(words[1].replaceAll("range\\[|]", "").split(":")[0]), Integer.parseInt(words[1].replaceAll("range\\[|]", "").split(":")[1]), getLabel(words[3].replaceAll("default\\[", "").replaceAll("]", ""), labels, vanillaLabels), getLabels(words[2], labels, vanillaLabels)));
+			case "LOOKUPSWITCH" ->
+					list.add(new LookupSwitchInsnNode(getLabel(words[2].replaceAll("default\\[", "").replaceAll("]", ""), labels, vanillaLabels), getLookupKeys(words[1]), getLabelKeys(words[1], labels, vanillaLabels)));
 			case "IRETURN" -> list.add(new InsnNode(IRETURN));
 			case "LRETURN" -> list.add(new InsnNode(LRETURN));
 			case "FRETURN" -> list.add(new InsnNode(FRETURN));
 			case "DRETURN" -> list.add(new InsnNode(DRETURN));
 			case "ARETURN" -> list.add(new InsnNode(ARETURN));
 			case "RETURN" -> list.add(new InsnNode(RETURN));
-			case "GETSTATIC" -> list.add(new FieldInsnNode(GETSTATIC, words[1].split("\\.")[0], words[1].split("\\.")[1], words[2]));
-			case "PUTSTATIC" -> list.add(new FieldInsnNode(PUTSTATIC, words[1].split("\\.")[0], words[1].split("\\.")[1], words[2]));
-			case "GETFIELD" -> list.add(new FieldInsnNode(GETFIELD, words[1].split("\\.")[0], words[1].split("\\.")[1], words[2]));
-			case "PUTFIELD" -> list.add(new FieldInsnNode(PUTFIELD, words[1].split("\\.")[0], words[1].split("\\.")[1], words[2]));
-			case "INVOKEVIRTUAL" -> list.add(new MethodInsnNode(INVOKEVIRTUAL, words[1].split("[.(]")[0], words[1].split("[.(]")[1], getDescriptor(words[1])));
-			case "INVOKESPECIAL" -> list.add(new MethodInsnNode(INVOKESPECIAL, words[1].split("[.(]")[0], words[1].split("[.(]")[1], getDescriptor(words[1])));
-			case "INVOKESTATIC" -> list.add(new MethodInsnNode(INVOKESTATIC, words[1].split("[.(]")[0], words[1].split("[.(]")[1], getDescriptor(words[1])));
-			case "INVOKESTATIC_itf" -> list.add(new MethodInsnNode(INVOKESTATIC, words[1].split("[.(]")[0], words[1].split("[.(]")[1], getDescriptor(words[1]), true));
-			case "INVOKEINTERFACE" -> list.add(new MethodInsnNode(INVOKEINTERFACE, words[1].split("[.(]")[0], words[1].split("[.(]")[1], getDescriptor(words[1])));
-			case "INVOKEDYNAMIC" -> list.add(new MethodInsnNode(INVOKEDYNAMIC, words[1].split("[.(]")[0], words[1].split("[.(]")[1], getDescriptor(words[1])));
+			case "GETSTATIC" ->
+					list.add(new FieldInsnNode(GETSTATIC, words[1].split("\\.")[0], words[1].split("\\.")[1], words[2]));
+			case "PUTSTATIC" ->
+					list.add(new FieldInsnNode(PUTSTATIC, words[1].split("\\.")[0], words[1].split("\\.")[1], words[2]));
+			case "GETFIELD" ->
+					list.add(new FieldInsnNode(GETFIELD, words[1].split("\\.")[0], words[1].split("\\.")[1], words[2]));
+			case "PUTFIELD" ->
+					list.add(new FieldInsnNode(PUTFIELD, words[1].split("\\.")[0], words[1].split("\\.")[1], words[2]));
+			case "INVOKEVIRTUAL" ->
+					list.add(new MethodInsnNode(INVOKEVIRTUAL, words[1].split("[.(]")[0], words[1].split("[.(]")[1], getDescriptor(words[1])));
+			case "INVOKESPECIAL" ->
+					list.add(new MethodInsnNode(INVOKESPECIAL, words[1].split("[.(]")[0], words[1].split("[.(]")[1], getDescriptor(words[1])));
+			case "INVOKESTATIC" ->
+					list.add(new MethodInsnNode(INVOKESTATIC, words[1].split("[.(]")[0], words[1].split("[.(]")[1], getDescriptor(words[1])));
+			case "INVOKESTATIC_itf" ->
+					list.add(new MethodInsnNode(INVOKESTATIC, words[1].split("[.(]")[0], words[1].split("[.(]")[1], getDescriptor(words[1]), true));
+			case "INVOKEINTERFACE" ->
+					list.add(new MethodInsnNode(INVOKEINTERFACE, words[1].split("[.(]")[0], words[1].split("[.(]")[1], getDescriptor(words[1])));
+			case "INVOKEDYNAMIC" ->
+					list.add(new MethodInsnNode(INVOKEDYNAMIC, words[1].split("[.(]")[0], words[1].split("[.(]")[1], getDescriptor(words[1])));
 			case "NEW" -> list.add(new TypeInsnNode(NEW, words[1]));
 			case "NEWARRAY" -> list.add(new IntInsnNode(NEWARRAY, getArrayType(words[1])));
 			case "ANEWARRAY" -> list.add(new TypeInsnNode(ANEWARRAY, words[1]));
@@ -288,7 +303,8 @@ public class ASMFormatParser {
 			case "MULTIANEWARRAY" -> list.add(new MultiANewArrayInsnNode(words[1], Integer.parseInt(words[2])));
 			case "IFNULL" -> list.add(new JumpInsnNode(IFNULL, getLabel(words[1], labels, vanillaLabels)));
 			case "IFNONNULL" -> list.add(new JumpInsnNode(IFNONNULL, getLabel(words[1], labels, vanillaLabels)));
-			case "LINE" -> list.add(new LineNumberNode(Integer.parseInt(words[2]), getLabel(words[1], labels, vanillaLabels)));
+			case "LINE" ->
+					list.add(new LineNumberNode(Integer.parseInt(words[2]), getLabel(words[1], labels, vanillaLabels)));
 			default -> {
 				if (words[0].matches("[A-Za-z]+:")) {
 					list.add(labels.get(words[0].substring(0, words[0].length() - 1)));
@@ -296,7 +312,7 @@ public class ASMFormatParser {
 			}
 		}
 	}
-
+	
 	private static int getArrayType(final String str) {
 		return switch (str) {
 			case "Z" -> T_BOOLEAN;
@@ -310,11 +326,11 @@ public class ASMFormatParser {
 			default -> throw new IllegalStateException("Unexpected value: " + str);
 		};
 	}
-
+	
 	private static String getDescriptor(final String str) {
 		return str.substring(str.indexOf('('));
 	}
-
+	
 	private static LabelNode[] getLabels(final String str, final Map<String, LabelNode> labels, final Map<String, LabelNode> vanillaLabels) {
 		final String[] strings = str.replaceAll("labels\\[|]", "").split(", ");
 		final LabelNode[] nodes = new LabelNode[strings.length];
@@ -323,7 +339,7 @@ public class ASMFormatParser {
 		}
 		return nodes;
 	}
-
+	
 	private static LabelNode[] getLabelKeys(String str, final Map<String, LabelNode> labels, final Map<String, LabelNode> vanillaLabels) {
 		str = str.substring(8, str.length() - 1).replaceAll("[0-9]+=", "");
 		final String[] strings = str.split(", ");
@@ -333,7 +349,7 @@ public class ASMFormatParser {
 		}
 		return keys;
 	}
-
+	
 	private static int[] getLookupKeys(String str) {
 		str = str.substring(8, str.length() - 1).replaceAll("=[A-Za-z]+", "");
 		final String[] strings = str.split(", ");
@@ -343,7 +359,7 @@ public class ASMFormatParser {
 		}
 		return keys;
 	}
-
+	
 	private static Object getLdc(final String str) {
 		if (str.equals("\"\"")) {
 			return "";
@@ -357,20 +373,20 @@ public class ASMFormatParser {
 			return Integer.parseInt(str);
 		}
 	}
-
+	
 	private static class NodeNotFoundException extends IllegalStateException {
 		public NodeNotFoundException() {
 			super();
 		}
-
+		
 		public NodeNotFoundException(final String s) {
 			super(s);
 		}
-
+		
 		public NodeNotFoundException(final String message, final Throwable cause) {
 			super(message, cause);
 		}
-
+		
 		public NodeNotFoundException(final Throwable cause) {
 			super(cause);
 		}

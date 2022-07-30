@@ -44,7 +44,6 @@ repositories {
 	}
 }
 
-
 val modImplementationInclude by configurations.register("modImplementationInclude")
 
 // All the dependencies are declared at gradle/libs.version.toml and referenced with "libs.<id>"
@@ -60,7 +59,10 @@ dependencies {
 	
 	annotationProcessor("net.auoeke:uncheck:latest.release")
 	
-	add(sourceSets.main.get().getTaskName("mod", JavaPlugin.IMPLEMENTATION_CONFIGURATION_NAME), modImplementationInclude)
+	add(
+		sourceSets.main.get().getTaskName("mod", JavaPlugin.IMPLEMENTATION_CONFIGURATION_NAME),
+		modImplementationInclude
+	)
 	add(net.fabricmc.loom.util.Constants.Configurations.INCLUDE, modImplementationInclude)
 }
 

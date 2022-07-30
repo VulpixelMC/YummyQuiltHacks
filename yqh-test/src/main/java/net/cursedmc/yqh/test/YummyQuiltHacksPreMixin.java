@@ -7,13 +7,14 @@ import net.fabricmc.api.EnvType;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.objectweb.asm.Opcodes;
-import org.objectweb.asm.tree.*;
+import org.objectweb.asm.tree.FieldNode;
+import org.objectweb.asm.tree.MethodNode;
 import org.quiltmc.loader.api.QuiltLoader;
 import org.quiltmc.loader.api.minecraft.MinecraftQuiltLoader;
 
 public class YummyQuiltHacksPreMixin implements PreMixin {
 	private static final Logger LOGGER = LogManager.getLogger("YummyQuiltHacks/PreMixin");
-
+	
 	@Override
 	public void onPreMixin() {
 		LOGGER.info("pre_mixin test");
@@ -46,7 +47,7 @@ public class YummyQuiltHacksPreMixin implements PreMixin {
 				}
 			}
 		});
-
+		
 		Mixout.TransformEvent.registerPreMixin((name, cn) -> {
 			if (MinecraftQuiltLoader.getEnvironmentType() == EnvType.SERVER) return;
 			final String screenClass;
@@ -76,13 +77,13 @@ public class YummyQuiltHacksPreMixin implements PreMixin {
 					if ("<init>".equals(m.name)) {
 						LOGGER.info("target method found");
 						m.instructions.insertBefore(m.instructions.get(m.instructions.size() - 2), ASMFormatParser.parseInstructions("""
-                        A:
-                        LINE A 1
-                        ALOAD 0
-                        LDC "experience the asm™"
-                        """ + "INVOKESTATIC_itf " + textClass + '.' + textOfMethod + "(Ljava/lang/String;)L" + textClass + ';' +
+								A:
+								LINE A 1
+								ALOAD 0
+								LDC "experience the asm™"
+								""" + "INVOKESTATIC_itf " + textClass + '.' + textOfMethod + "(Ljava/lang/String;)L" + textClass + ';' +
 								"\nPUTFIELD " + screenClass + '.' + screenTitleField + " L" + textClass + ';' + """
-
+								
 								B:
 								""", m, false));
 						LOGGER.info("applied");
