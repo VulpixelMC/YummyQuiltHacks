@@ -1,6 +1,5 @@
 package net.cursedmc.yqh;
 
-import com.enderzombi102.enderlib.BetterRuntimeUtil;
 import net.auoeke.reflect.ClassDefiner;
 import net.auoeke.reflect.Classes;
 import net.bytebuddy.agent.ByteBuddyAgent;
