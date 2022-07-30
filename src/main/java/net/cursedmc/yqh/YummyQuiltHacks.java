@@ -36,11 +36,11 @@ public class YummyQuiltHacks implements LanguageAdapter {
 	public static final Logger LOGGER = LogManager.getLogger("YummyQuiltHacks");
 	
 	static {
-		ClassLoader appLoader = Knot.class.getClassLoader();
-		ClassLoader knotLoader = YummyQuiltHacks.class.getClassLoader();
+		final ClassLoader appLoader = Knot.class.getClassLoader();
+		final ClassLoader knotLoader = YummyQuiltHacks.class.getClassLoader();
 		
 		String jarPath = Objects.requireNonNull(YummyQuiltHacks.class.getClassLoader().getResource("yummy_agent.jar")).getPath();
-		String vmPid = String.valueOf(ManagementFactory.getRuntimeMXBean().getPid());
+		final String vmPid = String.valueOf(ManagementFactory.getRuntimeMXBean().getPid());
 		
 		if (jarPath.startsWith("file:")) {
 			// sanitize path
@@ -49,10 +49,10 @@ public class YummyQuiltHacks implements LanguageAdapter {
 			
 			
 			// find yummy_agent.jar inside jar and make a temp jar of it
-			JarFile jar = new JarFile(FileUtils.getFile(jarPath));
+			final JarFile jar = new JarFile(FileUtils.getFile(jarPath));
 			byte[] jarBytes = jar.getInputStream(jar.getJarEntry("yummy_agent.jar")).readAllBytes();
 			jar.close();
-			File tempJar = File.createTempFile("tmp_", null);
+			final File tempJar = File.createTempFile("tmp_", null);
 			FileUtils.writeByteArrayToFile(tempJar, jarBytes);
 			
 			ByteBuddyAgent.attach(FileUtils.getFile(tempJar.getAbsolutePath()), vmPid);
@@ -75,7 +75,7 @@ public class YummyQuiltHacks implements LanguageAdapter {
 				continue;
 			}
 			
-			byte[] classBytes = Classes.classFile(knotLoader, name);
+			final byte[] classBytes = Classes.classFile(knotLoader, name);
 			
 			if (classBytes == null) {
 				LOGGER.warn("Could not find class bytes for class " + name + " in loader " + knotLoader);
@@ -101,12 +101,12 @@ public class YummyQuiltHacks implements LanguageAdapter {
 		for (ModContainerImpl mod : (Collection<ModContainerImpl>) (Collection<?>) QuiltLoader.getAllMods()) {
 			if (mod.getInternalMeta().getEntrypoints().containsKey("yqh:pre_mixin")) {
 				for (AdapterLoadableClassEntry entry : mod.getInternalMeta().getEntrypoints().get("yqh:pre_mixin")) {
-					Class<?> preMixinClass = ClassDefiner.make()
+					final Class<?> preMixinClass = ClassDefiner.make()
 							.classFile(entry.getValue())
 							.name(entry.getValue())
 							.loader(appLoader)
 							.define();
-					Object preMixin = doSafely(() -> preMixinClass.getConstructor().newInstance());
+					final Object preMixin = doSafely(() -> preMixinClass.getConstructor().newInstance());
 					doSafely(() -> preMixin.getClass().getMethod("onPreMixin").invoke(preMixin));
 				}
 			}
