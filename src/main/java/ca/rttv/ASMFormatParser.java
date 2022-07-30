@@ -14,9 +14,9 @@ import static org.objectweb.asm.Opcodes.*;
 
 //https://gist.github.com/RealRTTV/6d4576998f3780c9766a63caa5ab9ae1
 public class ASMFormatParser {
-	
+
 	private static final String PLACEHOLDER = "!YQH!";
-	
+
 	// fixme: fix mapping stuff
 	/**
 	 * Finds any unmapped {@code net.minecraft.*} classes/methods/fields and maps them.
@@ -25,65 +25,65 @@ public class ASMFormatParser {
 	 */
 	public static String mapString(String unmapped) {
 		// map methods
-		Pattern methodPattern = Pattern.compile("(net/minecraft/.+)\\.(.+)(\\(.+\\)\\S+)");
-		Matcher methodMatcher = methodPattern.matcher(unmapped);
+		final Pattern methodPattern = Pattern.compile("(net/minecraft/.+)\\.(.+)(\\(.+\\)\\S+)");
+		final Matcher methodMatcher = methodPattern.matcher(unmapped);
 		while (methodMatcher.find()) {
 			unmapped = (unmapped.replace(methodMatcher.group(), MapUtils.mappedClass(methodMatcher.group(1).replaceAll("/", ".")).replaceAll("\\.", "/") + '.' + MapUtils.mappedMethod(methodMatcher.group(1).replaceAll("/", "."), methodMatcher.group(2), methodMatcher.group(3)) + methodMatcher.group(3))).replaceAll("net/minecraft", "net/" + PLACEHOLDER);
 		}
-		
+
 		// map fields
-		Pattern fieldPattern = Pattern.compile("(net/minecraft/.+\\.([^(\\s]+)) (\\[?(?:[BCDFIJSZ]|(?:L.+;)))");
-		Matcher fieldMatcher = fieldPattern.matcher(unmapped);
+		final Pattern fieldPattern = Pattern.compile("(net/minecraft/.+\\.([^(\\s]+)) (\\[?(?:[BCDFIJSZ]|(?:L.+;)))");
+		final Matcher fieldMatcher = fieldPattern.matcher(unmapped);
 		while (fieldMatcher.find()) {
 			unmapped = unmapped.replace(fieldMatcher.group(), MapUtils.mappedField(fieldMatcher.group(1).replaceAll("/", "."), fieldMatcher.group(2), fieldMatcher.group(3)).replaceAll("\\.(?![A-Za-z]+[( ])", "/").replaceAll("net/minecraft", "net/" + PLACEHOLDER));
 		}
-		
+
 		// map classes
-		Pattern classPattern = Pattern.compile("net/minecraft/[^;.\\s]+");
-		Matcher classMatcher = classPattern.matcher(unmapped);
+		final Pattern classPattern = Pattern.compile("net/minecraft/[^;.\\s]+");
+		final Matcher classMatcher = classPattern.matcher(unmapped);
 		while (classMatcher.find()) {
 			unmapped = unmapped.replace(classMatcher.group(), MapUtils.mappedClass(classMatcher.group().replaceAll("/", "."))).replaceAll("\\.(?![A-Za-z]+[( ])", "/");
 		}
-		
+
 		return unmapped.replaceAll("net/" + PLACEHOLDER, "net/minecraft");
 	}
-	
-	public static InsnList parseInstructions(String unmapped, MethodNode method) {
+
+	public static InsnList parseInstructions(final String unmapped, final MethodNode method) {
 		return parseInstructions(unmapped, method, true);
 	}
-	
-	public static InsnList parseInstructions(String unmapped, MethodNode method, boolean map) {
-		String mapped = map ? mapString(unmapped) : unmapped; // the mapped string
-		
-		InsnList list = new InsnList();
-		Map<String, LabelNode> labels = new HashMap<>();
-		Map<String, LabelNode> vanillaLabels = new HashMap<>();
-		
-		String[] lines = mapped.split("\n");
-		
-		for (String line : lines) {
+
+	public static InsnList parseInstructions(final String unmapped, final MethodNode method, final boolean map) {
+		final String mapped = map ? mapString(unmapped) : unmapped; // the mapped string
+
+		final InsnList list = new InsnList();
+		final Map<String, LabelNode> labels = new HashMap<>();
+		final Map<String, LabelNode> vanillaLabels = new HashMap<>();
+
+		final String[] lines = mapped.split("\n");
+
+		for (final String line : lines) {
 			if (line.matches("[A-Za-z]+:")) {
 				labels.put(line.substring(0, line.length() - 1), new LabelNode());
 			}
 		}
-		
+
 		int count = 0;
-		for (AbstractInsnNode insn : method.instructions) {
+		for (final AbstractInsnNode insn : method.instructions) {
 			if (insn instanceof LineNumberNode lineNumberNode) {
 				vanillaLabels.put(getLabelName(count++), lineNumberNode.start);
 			}
 		}
-		
-		for (String line : lines) {
+
+		for (final String line : lines) {
 			parseInstruction(line, list, labels, vanillaLabels);
 		}
-		
+
 		return list;
 	}
-	
+
 	private static String getLabelName(int num) {
 		final int len = 16;
-		byte[] characters = new byte[len];
+		final byte[] characters = new byte[len];
 		int i;
 		num++;
 		for (i = len - 1; num != 0; i--) {
@@ -93,38 +93,38 @@ public class ASMFormatParser {
 		return new String(characters, ++i, len - i, StandardCharsets.US_ASCII);
 		// tks Geolykt ♥
 	}
-	
-	private static LabelNode getLabel(String str, Map<String, LabelNode> labels, Map<String, LabelNode> vanillaLabels) {
+
+	private static LabelNode getLabel(String str, final Map<String, LabelNode> labels, final Map<String, LabelNode> vanillaLabels) {
 		if (str.endsWith(":")) {
 			str = str.substring(0, str.length() - 1);
 		}
 		final String otherStr = str;
 		return Optional.ofNullable(labels.get(str)).orElseGet(() -> Optional.ofNullable(vanillaLabels.get(otherStr)).orElseThrow(NodeNotFoundException::new));
 	}
-	
-	private static void parseInstruction(String line, InsnList list, Map<String, LabelNode> labels, Map<String, LabelNode> vanillaLabels) {
-		String[] words = new String[10]; // seems good enough
-		
+
+	private static void parseInstruction(final String line, final InsnList list, final Map<String, LabelNode> labels, final Map<String, LabelNode> vanillaLabels) {
+		final String[] words = new String[10]; // seems good enough
+
 		boolean quote = false;
 		int index = 0;
 		StringBuilder sb = new StringBuilder();
 		for (int i = 0; i < line.length(); i++) {
-			char cur = line.charAt(i);
+			final char cur = line.charAt(i);
 			if (cur == '"') {
 				quote = !quote;
 			}
-			
+
 			if (cur == ' ' && !quote) {
 				words[index++] = sb.toString();
 				sb = new StringBuilder();
 				continue;
 			}
-			
+
 			sb.append(cur);
 		}
-		
+
 		words[index] = sb.toString();
-		
+
 		switch (words[0]) {
 			case "NOP", "DEFINE" -> {}
 			case "ACONST_NULL" -> list.add(new InsnNode(ACONST_NULL));
@@ -296,8 +296,8 @@ public class ASMFormatParser {
 			}
 		}
 	}
-	
-	private static int getArrayType(String str) {
+
+	private static int getArrayType(final String str) {
 		return switch (str) {
 			case "Z" -> T_BOOLEAN;
 			case "C" -> T_CHAR;
@@ -310,41 +310,41 @@ public class ASMFormatParser {
 			default -> throw new IllegalStateException("Unexpected value: " + str);
 		};
 	}
-	
-	private static String getDescriptor(String str) {
+
+	private static String getDescriptor(final String str) {
 		return str.substring(str.indexOf('('));
 	}
-	
-	private static LabelNode[] getLabels(String str, Map<String, LabelNode> labels, Map<String, LabelNode> vanillaLabels) {
-		String[] strings = str.replaceAll("labels\\[|]", "").split(", ");
-		LabelNode[] nodes = new LabelNode[strings.length];
+
+	private static LabelNode[] getLabels(final String str, final Map<String, LabelNode> labels, final Map<String, LabelNode> vanillaLabels) {
+		final String[] strings = str.replaceAll("labels\\[|]", "").split(", ");
+		final LabelNode[] nodes = new LabelNode[strings.length];
 		for (int i = 0; i < strings.length; i++) {
 			nodes[i] = getLabel(strings[i], labels, vanillaLabels);
 		}
 		return nodes;
 	}
-	
-	private static LabelNode[] getLabelKeys(String str, Map<String, LabelNode> labels, Map<String, LabelNode> vanillaLabels) {
+
+	private static LabelNode[] getLabelKeys(String str, final Map<String, LabelNode> labels, final Map<String, LabelNode> vanillaLabels) {
 		str = str.substring(8, str.length() - 1).replaceAll("[0-9]+=", "");
-		String[] strings = str.split(", ");
-		LabelNode[] keys = new LabelNode[strings.length];
+		final String[] strings = str.split(", ");
+		final LabelNode[] keys = new LabelNode[strings.length];
 		for (int i = 0; i < strings.length; i++) {
 			keys[i] = getLabel(strings[i], labels, vanillaLabels);
 		}
 		return keys;
 	}
-	
+
 	private static int[] getLookupKeys(String str) {
 		str = str.substring(8, str.length() - 1).replaceAll("=[A-Za-z]+", "");
-		String[] strings = str.split(", ");
-		int[] keys = new int[strings.length];
+		final String[] strings = str.split(", ");
+		final int[] keys = new int[strings.length];
 		for (int i = 0; i < strings.length; i++) {
 			keys[i] = Integer.parseInt(strings[i]);
 		}
 		return keys;
 	}
-	
-	private static Object getLdc(String str) {
+
+	private static Object getLdc(final String str) {
 		if (str.equals("\"\"")) {
 			return "";
 		} else if (str.startsWith("\"") && str.endsWith("\"")) {
@@ -357,21 +357,21 @@ public class ASMFormatParser {
 			return Integer.parseInt(str);
 		}
 	}
-	
+
 	private static class NodeNotFoundException extends IllegalStateException {
 		public NodeNotFoundException() {
 			super();
 		}
-		
-		public NodeNotFoundException(String s) {
+
+		public NodeNotFoundException(final String s) {
 			super(s);
 		}
-		
-		public NodeNotFoundException(String message, Throwable cause) {
+
+		public NodeNotFoundException(final String message, final Throwable cause) {
 			super(message, cause);
 		}
-		
-		public NodeNotFoundException(Throwable cause) {
+
+		public NodeNotFoundException(final Throwable cause) {
 			super(cause);
 		}
 	}

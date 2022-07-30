@@ -21,53 +21,53 @@ import java.util.function.BiConsumer;
 public class Music {
 	private static final Logger LOGGER = LogManager.getLogger("YummyQuiltHacks/Music");
 	public static final Instrumentation INST;
-	
+
 	private Music() {}
-	
-	public static void retransformClass(Class<?> klass, BiConsumer<String, ClassNode> consumer) {
-		ClassFileTransformer transformer = createTransformer(consumer);
+
+	public static void retransformClass(final Class<?> klass, final BiConsumer<String, ClassNode> consumer) {
+		final ClassFileTransformer transformer = createTransformer(consumer);
 		INST.addTransformer(transformer, true);
 		try {
 			INST.retransformClasses(klass);
-		} catch (UnmodifiableClassException e) {
+		} catch (final UnmodifiableClassException e) {
 			YummyQuiltHacks.LOGGER.error("An error has occurred retransforming class " + klass.getName());
 			throw new RuntimeException(e);
 		}
 		INST.removeTransformer(transformer);
 	}
-	
-	public static void retransformClass(String name, BiConsumer<String, ClassNode> consumer) {
+
+	public static void retransformClass(final String name, final BiConsumer<String, ClassNode> consumer) {
 		try {
 			retransformClass(Class.forName(name, true, UnsafeKnotClassLoader.knotLoader), consumer);
-		} catch (ClassNotFoundException e) {
+		} catch (final ClassNotFoundException e) {
 			throw new RuntimeException(e);
 		}
 	}
-	
-	private static ClassFileTransformer createTransformer(BiConsumer<String, ClassNode> consumer) {
+
+	private static ClassFileTransformer createTransformer(final BiConsumer<String, ClassNode> consumer) {
 		return new ClassFileTransformer() {
 			@Override
-			public byte[] transform(ClassLoader loader, String className, Class<?> classBeingRedefined, ProtectionDomain protectionDomain, byte[] classfileBuffer) {
-				ClassReader cr = new ClassReader(classfileBuffer);
-				ClassNode cn = new ClassNode(Opcodes.ASM9);
+			public byte[] transform(final ClassLoader loader, final String className, final Class<?> classBeingRedefined, final ProtectionDomain protectionDomain, final byte[] classfileBuffer) {
+				final ClassReader cr = new ClassReader(classfileBuffer);
+				final ClassNode cn = new ClassNode(Opcodes.ASM9);
 				cr.accept(cn, 0);
 				consumer.accept(className, cn);
-				ClassWriter cw = new ClassWriter(0);
+				final ClassWriter cw = new ClassWriter(0);
 				cn.accept(cw);
 				return cw.toByteArray();
 			}
 		};
 	}
-	
+
 	static {
 		LOGGER.info("Music Loaded");
 		LOGGER.info("what have we done");
 		LOGGER.info("how did we get here");
 		LOGGER.info("achievement unlcoekd");
 		LOGGER.info("advancement*");
-		ClassLoader appLoader = Knot.class.getClassLoader();
-		
-		Class<?> musicAgent = Class.forName("net.cursedmc.yqh.impl.instrumentation.MusicAgent", true, appLoader);
+		final ClassLoader appLoader = Knot.class.getClassLoader();
+
+		final Class<?> musicAgent = Class.forName("net.cursedmc.yqh.impl.instrumentation.MusicAgent", true, appLoader);
 		INST = (Instrumentation) musicAgent.getDeclaredField("INST").get(null);
 	}
 }
