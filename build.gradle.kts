@@ -21,6 +21,8 @@ repositories {
 	// Loom adds the essential maven repositories to download Minecraft and libraries from automatically.
 	// See https://docs.gradle.org/current/userguide/declaring_repositories.html
 	// for more information about repositories.
+	mavenCentral()
+	
 	maven {
 		name = "TerraformersMC"
 		url = uri("https://maven.terraformersmc.com/")
@@ -65,6 +67,7 @@ dependencies {
 	modImplementationInclude("net.auoeke", "reflect", "5.+")
 	modImplementationInclude("net.gudenau.lib", "unsafe", "latest.release")
 	modImplementationInclude("com.enderzombi102", "EnderLib", "0.2.0")
+	modImplementationInclude("net.bytebuddy", "byte-buddy-agent", "1.12.+")
 	
 	modRuntimeOnly("com.terraformersmc", "modmenu", "4.0.0")
 	modRuntimeOnly("maven.modrinth", "wthit", "fabric-5.4.3")
