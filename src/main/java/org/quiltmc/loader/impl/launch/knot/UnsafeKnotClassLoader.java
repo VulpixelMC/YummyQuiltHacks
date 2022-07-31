@@ -14,7 +14,6 @@ import java.net.URL;
 import java.net.URLClassLoader;
 import java.security.CodeSource;
 import java.security.PermissionCollection;
-import java.util.Enumeration;
 
 /**
  * makes stuff in the app ClassLoader available to anything loaded by KnotClassLoader
@@ -112,11 +111,6 @@ public class UnsafeKnotClassLoader extends KnotClassLoader {
 	@Override
 	public Class<?> loadClass(final String name, final boolean resolve) {
 		return this.loadClass(name, resolve, false);
-	}
-	
-	@Override
-	public void setClassAssertionStatus(String className, boolean enabled) {
-		super.setClassAssertionStatus(className, enabled);
 	}
 	
 	static {
