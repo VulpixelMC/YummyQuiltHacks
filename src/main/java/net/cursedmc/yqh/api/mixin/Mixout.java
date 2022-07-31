@@ -17,20 +17,20 @@ public class Mixout {
 		
 		void transform(String name, ClassNode node);
 		
-		static void registerPreMixin(final TransformEvent callback) {
+		static void registerPreMixin(TransformEvent callback) {
 			PRE_MIXIN.add(callback);
 		}
 		
-		static void registerPostMixin(final TransformEvent callback) {
+		static void registerPostMixin(TransformEvent callback) {
 			POST_MIXIN.add(callback);
 		}
 		
-		static boolean preMixin(final String name, final ClassNode cn) {
+		static boolean preMixin(String name, ClassNode cn) {
 			PRE_MIXIN.forEach(callback -> callback.transform(name, cn));
 			return PRE_MIXIN.isEmpty();
 		}
 		
-		static boolean postMixin(final String name, final ClassNode cn) {
+		static boolean postMixin(String name, ClassNode cn) {
 			POST_MIXIN.forEach(callback -> callback.transform(name, cn));
 			return POST_MIXIN.isEmpty();
 		}

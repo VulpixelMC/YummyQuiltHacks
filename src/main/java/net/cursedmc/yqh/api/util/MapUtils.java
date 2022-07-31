@@ -9,7 +9,7 @@ public class MapUtils {
 	 * @param name the class name
 	 * @return the corresponding mapping
 	 */
-	public static String mappedClass(final String name) {
+	public static String mappedClass(String name) {
 		return QuiltLoader.getMappingResolver().mapClassName("named", name);
 	}
 	
@@ -22,7 +22,7 @@ public class MapUtils {
 	 * @param descriptor the method descriptor
 	 * @return the corresponding mapping
 	 */
-	public static String mappedMethod(final String owner, final String name, final String descriptor) {
+	public static String mappedMethod(String owner, String name, String descriptor) {
 		return QuiltLoader.getMappingResolver().mapMethodName("named", owner, name, descriptor);
 	}
 	
@@ -34,7 +34,7 @@ public class MapUtils {
 	 * @param descriptor the field descriptor
 	 * @return the corresponding mapping
 	 */
-	public static String mappedField(final String owner, final String name, final String descriptor) {
+	public static String mappedField(String owner, String name, String descriptor) {
 		return QuiltLoader.getMappingResolver().mapFieldName("named", owner, name, descriptor);
 	}
 	
@@ -48,7 +48,7 @@ public class MapUtils {
 	 * @return the corresponding mapping
 	 * @see MapUtils#mappedField(String owner, String name, String descriptor)
 	 */
-	public static String mappedFieldName(final String owner, final String name, final String descriptor) {
+	public static String mappedFieldName(String owner, String name, String descriptor) {
 		final String[] split = mappedField(owner, name, descriptor).split("\\.");
 		return split[split.length - 1];
 	}

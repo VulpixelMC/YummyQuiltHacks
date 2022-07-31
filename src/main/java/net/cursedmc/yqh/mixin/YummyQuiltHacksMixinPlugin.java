@@ -15,7 +15,7 @@ import java.util.Set;
 
 public class YummyQuiltHacksMixinPlugin implements IMixinConfigPlugin {
 	@Override
-	public void onLoad(final String mixinPackage) {
+	public void onLoad(String mixinPackage) {
 	}
 	
 	@Override
@@ -24,12 +24,12 @@ public class YummyQuiltHacksMixinPlugin implements IMixinConfigPlugin {
 	}
 	
 	@Override
-	public boolean shouldApplyMixin(final String targetClassName, final String mixinClassName) {
+	public boolean shouldApplyMixin(String targetClassName, String mixinClassName) {
 		return true;
 	}
 	
 	@Override
-	public void acceptTargets(final Set<String> myTargets, final Set<String> otherTargets) {
+	public void acceptTargets(Set<String> myTargets, Set<String> otherTargets) {
 	}
 	
 	@Override
@@ -38,11 +38,11 @@ public class YummyQuiltHacksMixinPlugin implements IMixinConfigPlugin {
 	}
 	
 	@Override
-	public void preApply(final String targetClassName, final ClassNode targetClass, final String mixinClassName, final IMixinInfo mixinInfo) {
+	public void preApply(String targetClassName, ClassNode targetClass, String mixinClassName, IMixinInfo mixinInfo) {
 	}
 	
 	@Override
-	public void postApply(final String targetClassName, final ClassNode targetClass, final String mixinClassName, final IMixinInfo mixinInfo) {
+	public void postApply(String targetClassName, ClassNode targetClass, String mixinClassName, IMixinInfo mixinInfo) {
 	}
 	
 	static {

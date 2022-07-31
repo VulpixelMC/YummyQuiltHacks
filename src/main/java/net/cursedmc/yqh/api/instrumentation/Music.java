@@ -23,7 +23,7 @@ public class Music {
 	private Music() {
 	}
 	
-	public static void retransformClass(final Class<?> klass, final BiConsumer<String, ClassNode> consumer) {
+	public static void retransformClass(Class<?> klass, BiConsumer<String, ClassNode> consumer) {
 		final ClassFileTransformer transformer = createTransformer(consumer);
 		INST.addTransformer(transformer, true);
 		try {
@@ -35,7 +35,7 @@ public class Music {
 		INST.removeTransformer(transformer);
 	}
 	
-	public static void retransformClass(final String name, final BiConsumer<String, ClassNode> consumer) {
+	public static void retransformClass(String name, BiConsumer<String, ClassNode> consumer) {
 		try {
 			retransformClass(Class.forName(name, true, UnsafeKnotClassLoader.knotLoader), consumer);
 		} catch (final ClassNotFoundException e) {
@@ -43,7 +43,7 @@ public class Music {
 		}
 	}
 	
-	private static ClassFileTransformer createTransformer(final BiConsumer<String, ClassNode> consumer) {
+	private static ClassFileTransformer createTransformer(BiConsumer<String, ClassNode> consumer) {
 		return new ClassFileTransformer() {
 			@Override
 			public byte[] transform(final ClassLoader loader, final String className, final Class<?> classBeingRedefined, final ProtectionDomain protectionDomain, final byte[] classfileBuffer) {

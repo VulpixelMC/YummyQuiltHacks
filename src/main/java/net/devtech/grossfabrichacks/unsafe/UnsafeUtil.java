@@ -409,7 +409,7 @@ public class UnsafeUtil extends Unsafe {
 	/**
 	 * set the first 4 bytes of an object to something, this can be used to mutate the size of an array
 	 */
-	public static void setFirstInt(final Object object, final int val) {
+	public static void setFirstInt(Object object, int val) {
 		final long orig = getKlass(object);
 		final FirstInt firstInt = unsafeCast(object, FIRST_INT_KLASS);
 		firstInt.val = val;
@@ -429,7 +429,7 @@ public class UnsafeUtil extends Unsafe {
 	 * @param <T>        the returned array type
 	 * @return a non-copied casted array
 	 */
-	public static <T> T upcastArray(final Object array, final int newType, final int conversion) {
+	public static <T> T upcastArray(Object array, int newType, int conversion) {
 		final FirstInt wrapper = unsafeCast(array, FIRST_INT_KLASS);
 		wrapper.val /= conversion;
 		return unsafeCast(array, newType);
@@ -447,7 +447,7 @@ public class UnsafeUtil extends Unsafe {
 	 * @param <T>        the returned array type
 	 * @return a non-copied casted array
 	 */
-	public static <T> T downcastArray(final Object array, final int newType, final int conversion) {
+	public static <T> T downcastArray(Object array, int newType, int conversion) {
 		final FirstInt wrapper = unsafeCast(array, FIRST_INT_KLASS);
 		wrapper.val *= conversion;
 		return unsafeCast(array, newType);
@@ -462,7 +462,7 @@ public class UnsafeUtil extends Unsafe {
 	 * @param bClass the class that each of the elements are expected to be
 	 * @param <B>    the desired type of the array
 	 */
-	public static <B> B[] arrayCast(final Object[] obj, final Class<B> bClass) {
+	public static <B> B[] arrayCast(Object[] obj, Class<B> bClass) {
 		return arrayCast(obj, getKlass(Array.newInstance(bClass, 0)));
 	}
 	
@@ -475,7 +475,7 @@ public class UnsafeUtil extends Unsafe {
 	 * @param <B>        the desired type
 	 * @see UnsafeUtil#getKlass(Object)
 	 */
-	public static <B> B[] arrayCast(final Object[] obj, final long classKlass) {
+	public static <B> B[] arrayCast(Object[] obj, long classKlass) {
 		if (EIGHT_BYTE_KLASS) {
 			getAndSetLong(obj, KLASS_OFFSET, classKlass);
 		} else {
@@ -485,15 +485,15 @@ public class UnsafeUtil extends Unsafe {
 		return (B[]) obj;
 	}
 	
-	public static <B> B defineAndInitializeAndUnsafeCast(final Object object, final String klass, final ClassLoader loader) {
+	public static <B> B defineAndInitializeAndUnsafeCast(Object object, String klass, ClassLoader loader) {
 		return unsafeCast(object, getKlassFromClass(findAndDefineAndInitializeClass(klass, loader)));
 	}
 	
-	public static <B> B unsafeCast(final Object object, final String klass) {
+	public static <B> B unsafeCast(Object object, String klass) {
 		return unsafeCast(object, loadClass(klass));
 	}
 	
-	public static <B> B unsafeCast(final Object object, final Class<?> klass) {
+	public static <B> B unsafeCast(Object object, Class<?> klass) {
 		return unsafeCast(object, getKlassFromClass(klass));
 	}
 	
@@ -506,7 +506,7 @@ public class UnsafeUtil extends Unsafe {
 	 * @param <B>        the desired type
 	 * @see UnsafeUtil#getKlass(Object)
 	 */
-	public static <B> B unsafeCast(final Object object, final long klassValue) {
+	public static <B> B unsafeCast(Object object, long klassValue) {
 		if (EIGHT_BYTE_KLASS) {
 			getAndSetLong(object, KLASS_OFFSET, klassValue);
 		} else {
@@ -521,7 +521,7 @@ public class UnsafeUtil extends Unsafe {
 	 *
 	 * @param cls an instance of the class to obtain the klass value from
 	 */
-	public static long getKlass(final Object cls) {
+	public static long getKlass(Object cls) {
 		if (EIGHT_BYTE_KLASS) {
 			return getLong(cls, KLASS_OFFSET);
 		}
@@ -532,7 +532,7 @@ public class UnsafeUtil extends Unsafe {
 	/**
 	 * get the klass pointer of a class, only works on instantiatable classes
 	 */
-	public static long getKlassFromClass(final Class<?> type) {
+	public static long getKlassFromClass(Class<?> type) {
 		return getKlass(allocateInstance(type));
 	}
 	
@@ -542,7 +542,7 @@ public class UnsafeUtil extends Unsafe {
 	 * @deprecated doesn't work, idk why todo fix
 	 */
 	@Deprecated
-	public static long getKlassFromClass0(final Class<?> type) {
+	public static long getKlassFromClass0(Class<?> type) {
 		if (EIGHT_BYTE_KLASS) {
 			return getLong(type, CLASS_KLASS_OFFSET);
 		}
@@ -550,7 +550,7 @@ public class UnsafeUtil extends Unsafe {
 		return getInt(type, CLASS_KLASS_OFFSET);
 	}
 	
-	public static void putInt(final Object object, final String field, final int value) {
+	public static void putInt(Object object, String field, int value) {
 		try {
 			putInt(object, objectFieldOffset(object.getClass().getDeclaredField(field)), value);
 		} catch (final NoSuchFieldException exception) {
@@ -558,7 +558,7 @@ public class UnsafeUtil extends Unsafe {
 		}
 	}
 	
-	public static void putInt(final Class<?> klass, final Object object, final String field, final int value) {
+	public static void putInt(Class<?> klass, Object object, String field, int value) {
 		try {
 			putInt(object, objectFieldOffset(klass.getDeclaredField(field)), value);
 		} catch (final NoSuchFieldException exception) {
@@ -566,7 +566,7 @@ public class UnsafeUtil extends Unsafe {
 		}
 	}
 	
-	public static <T> T getObject(final long address) {
+	public static <T> T getObject(long address) {
 		final Object[] box = new Object[1];
 		final long baseOffset = arrayBaseOffset(Object[].class);
 		
@@ -575,26 +575,26 @@ public class UnsafeUtil extends Unsafe {
 		return (T) box[0];
 	}
 	
-	public static long addressOf(final Object object) {
+	public static long addressOf(Object object) {
 		return addressOf(0, object);
 	}
 	
-	public static long addressOf(final int index, final Object... objects) {
+	public static long addressOf(int index, Object... objects) {
 		final long offset = arrayBaseOffset(objects.getClass());
 		final long scale = arrayIndexScale(objects.getClass());
 		
 		return (getInt(objects, offset + index * scale) & 0xFFFFFFFL) * addressFactor;
 	}
 	
-	public static <T> Class<T> defineAndInitialize(final String binaryName, final byte[] klass) {
+	public static <T> Class<T> defineAndInitialize(String binaryName, byte[] klass) {
 		return defineAndInitialize(binaryName, klass, null, null);
 	}
 	
-	public static <T> Class<T> defineAndInitialize(final String binaryName, final byte[] klass, final ClassLoader loader) {
+	public static <T> Class<T> defineAndInitialize(String binaryName, byte[] klass, ClassLoader loader) {
 		return defineAndInitialize(binaryName, klass, loader, null);
 	}
 	
-	public static <T> Class<T> defineAndInitialize(final String binaryName, final byte[] bytecode, final ClassLoader loader, final ProtectionDomain protectionDomain) {
+	public static <T> Class<T> defineAndInitialize(String binaryName, byte[] bytecode, ClassLoader loader, ProtectionDomain protectionDomain) {
 		final Class<?> klass;
 		
 		ensureClassInitialized(klass = defineClass(binaryName, bytecode, 0, bytecode.length, loader, protectionDomain));
@@ -602,30 +602,30 @@ public class UnsafeUtil extends Unsafe {
 		return (Class<T>) klass;
 	}
 	
-	public static <T> Class<T> initializeClass(final Class<?> klass) {
+	public static <T> Class<T> initializeClass(Class<?> klass) {
 		ensureClassInitialized(klass);
 		
 		return (Class<T>) klass;
 	}
 	
-	public static <T> Class<T> defineClass(final String binaryName, final byte[] klass) {
+	public static <T> Class<T> defineClass(String binaryName, byte[] klass) {
 		return defineClass(binaryName, klass, 0, klass.length, null, null);
 	}
 	
-	public static <T> Class<T> defineClass(final String binaryName, final byte[] klass, final ClassLoader loader) {
+	public static <T> Class<T> defineClass(String binaryName, byte[] klass, ClassLoader loader) {
 		return defineClass(binaryName, klass, 0, klass.length, loader, null);
 	}
 	
-	public static <T> Class<T> defineClass(final String binaryName, final byte[] klass,
-	                                       final ClassLoader loader, final ProtectionDomain protectionDomain) {
+	public static <T> Class<T> defineClass(String binaryName, byte[] klass,
+	                                       ClassLoader loader, ProtectionDomain protectionDomain) {
 		return defineClass(binaryName, klass, 0, klass.length, loader, protectionDomain);
 	}
 	
-	public static <T> Class<T> findAndDefineClass(final String binaryName, final ClassLoader loader) {
+	public static <T> Class<T> findAndDefineClass(String binaryName, ClassLoader loader) {
 		return defineClass(binaryName, findClass(binaryName), loader);
 	}
 	
-	public static byte[] findClass(final String binaryName) {
+	public static byte[] findClass(String binaryName) {
 		try {
 			final InputStream stream = Thread.currentThread().getContextClassLoader().getResourceAsStream(binaryName.replace('.', '/') + ".class");
 			final byte[] bytecode = new byte[stream.available()];
@@ -639,7 +639,7 @@ public class UnsafeUtil extends Unsafe {
 		}
 	}
 	
-	public static <T> Class<T> findAndDefineAndInitializeClass(final String binaryName, final ClassLoader loader) {
+	public static <T> Class<T> findAndDefineAndInitializeClass(String binaryName, ClassLoader loader) {
 		try {
 			return initializeClass(findAndDefineClass(binaryName, loader));
 		} catch (final Throwable throwable) {
@@ -647,7 +647,7 @@ public class UnsafeUtil extends Unsafe {
 		}
 	}
 	
-	public static <T> Class<T> loadClass(final String name) {
+	public static <T> Class<T> loadClass(String name) {
 		try {
 			return (Class<T>) Class.forName(name);
 		} catch (final ClassNotFoundException exception) {
@@ -655,7 +655,7 @@ public class UnsafeUtil extends Unsafe {
 		}
 	}
 	
-	public static <T> Class<T> loadClass(final String name, final boolean initialize, final ClassLoader loader) {
+	public static <T> Class<T> loadClass(String name, boolean initialize, ClassLoader loader) {
 		try {
 			return (Class<T>) Class.forName(name, initialize, loader);
 		} catch (final ClassNotFoundException exception) {

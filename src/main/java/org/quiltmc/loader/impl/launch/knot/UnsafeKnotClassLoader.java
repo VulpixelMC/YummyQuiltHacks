@@ -33,17 +33,17 @@ public class UnsafeKnotClassLoader extends KnotClassLoader {
 	}
 	
 	@Override
-	public Class<?> findClass(final String name) {
+	public Class<?> findClass(String name) {
 		return this.loadClass(name, false);
 	}
 	
 	@Override
-	public PermissionCollection getPermissions(final CodeSource codesource) {
+	public PermissionCollection getPermissions(CodeSource codesource) {
 		return super.getPermissions(codesource);
 	}
 	
 	@Override
-	public URL findResource(final String moduleName, final String name) throws IOException {
+	public URL findResource(String moduleName, String name) throws IOException {
 		return super.findResource(moduleName, name);
 	}
 	
@@ -53,18 +53,18 @@ public class UnsafeKnotClassLoader extends KnotClassLoader {
 	}
 	
 	@Override
-	public String findLibrary(@SuppressWarnings("SpellCheckingInspection") final String libname) {
+	public String findLibrary(@SuppressWarnings("SpellCheckingInspection") String libname) {
 		return super.findLibrary(libname);
 	}
 	
 	@Override
-	public boolean isClassLoaded(final String name) {
+	public boolean isClassLoaded(String name) {
 		synchronized (super.getClassLoadingLock(name)) {
 			return super.findLoadedClass(name) != null || classes.containsKey(name);
 		}
 	}
 	
-	public Class<?> loadClass(final String name, final boolean resolve, final boolean allowFromParent) {
+	public Class<?> loadClass(String name, boolean resolve, boolean allowFromParent) {
 		synchronized (this.getClassLoadingLock(name)) {
 			Class<?> klass = classes.get(name);
 			
@@ -109,7 +109,7 @@ public class UnsafeKnotClassLoader extends KnotClassLoader {
 	}
 	
 	@Override
-	public Class<?> loadClass(final String name, final boolean resolve) {
+	public Class<?> loadClass(String name, boolean resolve) {
 		return this.loadClass(name, resolve, false);
 	}
 	

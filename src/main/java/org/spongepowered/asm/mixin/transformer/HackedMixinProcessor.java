@@ -7,12 +7,12 @@ import org.spongepowered.asm.mixin.transformer.ext.Extensions;
 import org.spongepowered.asm.mixin.transformer.ext.IHotSwap;
 
 public class HackedMixinProcessor extends MixinProcessor {
-	HackedMixinProcessor(final MixinEnvironment environment, final Extensions extensions, final IHotSwap hotSwapper, final MixinCoprocessorNestHost nestHostCoprocessor) {
+	HackedMixinProcessor(MixinEnvironment environment, Extensions extensions, IHotSwap hotSwapper, MixinCoprocessorNestHost nestHostCoprocessor) {
 		super(environment, extensions, hotSwapper, nestHostCoprocessor);
 	}
 	
 	@Override
-	synchronized boolean applyMixins(final MixinEnvironment environment, final String name, final ClassNode targetClassNode) {
+	synchronized boolean applyMixins(MixinEnvironment environment, String name, ClassNode targetClassNode) {
 		boolean shouldApply;
 		
 		shouldApply = Mixout.TransformEvent.preMixin(name, targetClassNode);
