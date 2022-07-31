@@ -9,6 +9,7 @@ import org.apache.logging.log4j.Logger;
 import org.quiltmc.loader.impl.game.GameProvider;
 import org.quiltmc.loader.impl.util.LoaderUtil;
 
+import java.io.IOException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.security.CodeSource;
@@ -19,6 +20,7 @@ import java.util.Enumeration;
  * makes stuff in the app ClassLoader available to anything loaded by KnotClassLoader
  */
 //https://github.com/Devan-Kerman/GrossFabricHacks/blob/ae137cd46b262c0ef2ed6f982d1bbbeca0a6c4da/src/main/java/net/fabricmc/loader/launch/knot/UnsafeKnotClassLoader.java
+@SuppressWarnings("RedundantThrows")
 public class UnsafeKnotClassLoader extends KnotClassLoader {
 	public static final ClassLoader appLoader = UnsafeKnotClassLoader.class.getClassLoader();
 	public static final ClassLoader knotLoader = Thread.currentThread().getContextClassLoader();
@@ -33,7 +35,7 @@ public class UnsafeKnotClassLoader extends KnotClassLoader {
 	
 	@Override
 	public Class<?> findClass(final String name) {
-		return super.findClass(name);
+		return this.loadClass(name, false);
 	}
 	
 	@Override
@@ -42,18 +44,8 @@ public class UnsafeKnotClassLoader extends KnotClassLoader {
 	}
 	
 	@Override
-	public Class<?> findClass(final String moduleName, final String name) {
-		return super.findClass(moduleName, name);
-	}
-	
-	@Override
-	public URL findResource(final String moduleName, final String name) {
+	public URL findResource(final String moduleName, final String name) throws IOException {
 		return super.findResource(moduleName, name);
-	}
-	
-	@Override
-	public Enumeration<URL> findResources(final String name) {
-		return super.findResources(name);
 	}
 	
 	@Override
@@ -120,6 +112,11 @@ public class UnsafeKnotClassLoader extends KnotClassLoader {
 	@Override
 	public Class<?> loadClass(final String name, final boolean resolve) {
 		return this.loadClass(name, resolve, false);
+	}
+	
+	@Override
+	public void setClassAssertionStatus(String className, boolean enabled) {
+		super.setClassAssertionStatus(className, enabled);
 	}
 	
 	static {

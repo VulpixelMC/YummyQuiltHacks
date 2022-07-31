@@ -13,7 +13,7 @@ import java.util.regex.Pattern;
 import static org.objectweb.asm.Opcodes.*;
 
 //https://gist.github.com/RealRTTV/6d4576998f3780c9766a63caa5ab9ae1
-public class ASMFormatParser {
+public final class ASMFormatParser {
 	
 	private static final String PLACEHOLDER = "!YQH!";
 	

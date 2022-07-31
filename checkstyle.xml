@@ -7,6 +7,5 @@
     <property name="fileExtensions" value="java"/>
     <module name="TreeWalker">
         <module name="FinalLocalVariable"/>
-        <module name="FinalParameters"/>
     </module>
 </module>
