@@ -13,7 +13,7 @@ import org.quiltmc.loader.api.QuiltLoader;
 import org.quiltmc.loader.api.minecraft.MinecraftQuiltLoader;
 
 public class YummyQuiltHacksPreMixin implements PreMixin {
-	private static final Logger LOGGER = LogManager.getLogger("YummyQuiltHacks/PreMixin");
+	private static final Logger LOGGER = LogManager.getLogger("YummyQuiltHacks/Test/PreMixin");
 	
 	@Override
 	public void onPreMixin() {

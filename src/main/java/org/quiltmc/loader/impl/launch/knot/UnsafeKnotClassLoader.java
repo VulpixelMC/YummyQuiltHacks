@@ -2,6 +2,7 @@ package org.quiltmc.loader.impl.launch.knot;
 
 import it.unimi.dsi.fastutil.objects.Object2ReferenceMap;
 import it.unimi.dsi.fastutil.objects.Object2ReferenceOpenHashMap;
+import net.cursedmc.yqh.api.classloader.YummyClassLoader;
 import net.devtech.grossfabrichacks.unsafe.UnsafeUtil;
 import net.fabricmc.api.EnvType;
 import org.apache.logging.log4j.LogManager;
@@ -21,14 +22,14 @@ import java.security.PermissionCollection;
 //https://github.com/Devan-Kerman/GrossFabricHacks/blob/ae137cd46b262c0ef2ed6f982d1bbbeca0a6c4da/src/main/java/net/fabricmc/loader/launch/knot/UnsafeKnotClassLoader.java
 @SuppressWarnings("RedundantThrows")
 public class UnsafeKnotClassLoader extends KnotClassLoader {
-	public static final ClassLoader appLoader = UnsafeKnotClassLoader.class.getClassLoader();
+	public static final ClassLoader appLoader = YummyClassLoader.APP_LOADER;
 	public static final ClassLoader knotLoader = Thread.currentThread().getContextClassLoader();
 	public static final URLClassLoader parent = (URLClassLoader) knotLoader.getParent();
 	public static final Logger LOGGER = LogManager.getLogger("YummyQuiltHacks/UnsafeKnotClassLoader");
 	public static final Object2ReferenceMap<String, Class<?>> classes = new Object2ReferenceOpenHashMap<>();
 	public static final KnotClassDelegate delegate = ((KnotClassLoader) knotLoader).getDelegate();
 	
-	UnsafeKnotClassLoader(final boolean isDevelopment, final EnvType envType, final GameProvider provider) {
+	UnsafeKnotClassLoader(boolean isDevelopment, EnvType envType, GameProvider provider) {
 		super(isDevelopment, envType, provider);
 	}
 	

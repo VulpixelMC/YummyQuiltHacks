@@ -1,0 +1,7 @@
+{
+	"schema_version": 1,
+	"entrypoints": {
+		"pre_loader": "net.cursedmc.yqh.test.YummyQuiltHacksPreLoader",
+		"pre_mixin": "net.cursedmc.yqh.test.YummyQuiltHacksPreMixin"
+	}
+}

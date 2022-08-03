@@ -28,6 +28,7 @@
 			"minecraft"
 		],
 		"language_adapters": {
+			"yqh-relaunch": "net.cursedmc.yqh.impl.relaunch.YummyRelauncher",
 			"yqh": "net.cursedmc.yqh.YummyQuiltHacks"
 		}
 	},

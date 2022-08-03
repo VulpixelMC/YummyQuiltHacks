@@ -68,6 +68,7 @@ dependencies {
 	modImplementationInclude("net.gudenau.lib", "unsafe", "latest.release")
 	modImplementationInclude("com.enderzombi102", "EnderLib", "0.2.0")
 	modImplementationInclude("net.bytebuddy", "byte-buddy-agent", "1.12.+")
+	modImplementationInclude("com.jsoniter", "jsoniter", "0.9.19")
 	
 	modRuntimeOnly("com.terraformersmc", "modmenu", "4.0.0")
 	modRuntimeOnly("maven.modrinth", "wthit", "fabric-5.4.3")
@@ -129,6 +130,14 @@ java {
 	// If this mod is going to be a library, then it should also generate Javadocs in order to aid with development.
 	// Uncomment this line to generate them.
 	// withJavadocJar()
+}
+
+tasks.jar {
+	manifest {
+		attributes(
+			"Main-Class" to "net.cursedmc.yqh.impl.relaunch.YummyLauncher"
+		)
+	}
 }
 
 // If you plan to use a different file for the license, don't forget to change the file name here!

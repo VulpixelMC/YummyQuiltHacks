@@ -36,6 +36,21 @@ public class Mixout {
 		}
 	}
 	
+	@FunctionalInterface
+	public interface RawTransformEvent {
+		List<RawTransformEvent> PRE_LOADER = new ArrayList<>();
+		
+		void transform(String name, byte[] bytes);
+		
+		static void registerPreLoader(RawTransformEvent callback) {
+			PRE_LOADER.add(callback);
+		}
+		
+		static void preLoader(String name, byte[] bytes) {
+			PRE_LOADER.forEach(callback -> callback.transform(name, bytes));
+		}
+	}
+	
 	static {
 		LOGGER.info("mixin, mixout. mixin, mixout. /lyr");
 		LOGGER.info("we have truly achieved a sad state of realization, one that encompasses the entire jdk, the minecraft classes.. everything. we have untold power, and with so may come untold consequences. tread lightly, explorer.");
