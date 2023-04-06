@@ -1,6 +1,7 @@
 package net.cursedmc.yqh.api.instrumentation;
 
 import net.cursedmc.yqh.YummyQuiltHacks;
+import net.cursedmc.yqh.api.classloader.UnsafeKnotClassLoader;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.objectweb.asm.ClassReader;
@@ -8,7 +9,6 @@ import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.tree.ClassNode;
 import org.quiltmc.loader.impl.launch.knot.Knot;
-import org.quiltmc.loader.impl.launch.knot.UnsafeKnotClassLoader;
 
 import java.lang.instrument.ClassFileTransformer;
 import java.lang.instrument.Instrumentation;
@@ -17,10 +17,23 @@ import java.security.ProtectionDomain;
 import java.util.function.BiConsumer;
 
 public class Music {
-	private static final Logger LOGGER = LogManager.getLogger("YummyQuiltHacks/Music");
+	/**
+	 * @deprecated
+	 * @see Music#getInstrument()
+	 */
+	@Deprecated(
+			since = "0.2.0",
+			forRemoval = true
+	)
 	public static final Instrumentation INST;
 	
+	private static final Logger LOGGER = LogManager.getLogger("YummyQuiltHacks/Music");
+	
 	private Music() {
+	}
+	
+	public static Instrumentation getInstrument() {
+		return INST;
 	}
 	
 	public static void retransformClass(Class<?> klass, BiConsumer<String, ClassNode> consumer) {
@@ -37,7 +50,7 @@ public class Music {
 	
 	public static void retransformClass(String name, BiConsumer<String, ClassNode> consumer) {
 		try {
-			retransformClass(Class.forName(name, true, UnsafeKnotClassLoader.knotLoader), consumer);
+			retransformClass(Class.forName(name, true, UnsafeKnotClassLoader.INSTANCE), consumer);
 		} catch (final ClassNotFoundException e) {
 			throw new RuntimeException(e);
 		}

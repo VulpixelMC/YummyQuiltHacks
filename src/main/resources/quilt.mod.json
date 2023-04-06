@@ -27,8 +27,10 @@
 			},
 			"minecraft"
 		],
+		"_comment_re-add_to_adapters_after_1.0": {
+			"yqh-relaunch": "net.cursedmc.yqh.impl.relaunch.YummyRelauncher"
+		},
 		"language_adapters": {
-			"yqh-relaunch": "net.cursedmc.yqh.impl.relaunch.YummyRelauncher",
 			"yqh": "net.cursedmc.yqh.YummyQuiltHacks"
 		}
 	},

@@ -5,6 +5,7 @@ import org.apache.logging.log4j.Logger;
 import org.objectweb.asm.tree.ClassNode;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class Mixout {
@@ -40,14 +41,24 @@ public class Mixout {
 	public interface RawTransformEvent {
 		List<RawTransformEvent> PRE_LOADER = new ArrayList<>();
 		
-		void transform(String name, byte[] bytes);
+		byte[] transform(String name, byte[] bytes);
 		
 		static void registerPreLoader(RawTransformEvent callback) {
 			PRE_LOADER.add(callback);
 		}
 		
-		static void preLoader(String name, byte[] bytes) {
-			PRE_LOADER.forEach(callback -> callback.transform(name, bytes));
+		static byte[] preLoader(String name, byte[] bytes) {
+			if (name.equals(Mixout.class.getName())) {
+				throw new UnsupportedOperationException("Attempted to modify Mixout! Check if Mixout is being class-loaded twice.");
+			}
+			var $ = new Object() {
+				byte[] b = bytes;
+			};
+			PRE_LOADER.forEach(callback -> $.b = callback.transform(name, $.b));
+			if (name.equals("org.quiltmc.loader.impl.game.minecraft.Hooks")) {
+				System.out.println("modified Hooks: " + !Arrays.equals(bytes, $.b));
+			}
+			return $.b;
 		}
 	}
 	

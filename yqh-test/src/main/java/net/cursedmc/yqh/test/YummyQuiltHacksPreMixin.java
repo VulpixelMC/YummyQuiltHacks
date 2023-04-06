@@ -11,6 +11,7 @@ import org.objectweb.asm.tree.FieldNode;
 import org.objectweb.asm.tree.MethodNode;
 import org.quiltmc.loader.api.QuiltLoader;
 import org.quiltmc.loader.api.minecraft.MinecraftQuiltLoader;
+import org.quiltmc.loader.impl.game.minecraft.Hooks;
 
 public class YummyQuiltHacksPreMixin implements PreMixin {
 	private static final Logger LOGGER = LogManager.getLogger("YummyQuiltHacks/Test/PreMixin");
@@ -18,6 +19,10 @@ public class YummyQuiltHacksPreMixin implements PreMixin {
 	@Override
 	public void onPreMixin() {
 		LOGGER.info("pre_mixin test");
+		
+		LOGGER.info(YummyQuiltHacksPreMixin.class.getClassLoader());
+		
+		LOGGER.info(Hooks.QUILT);
 		Mixout.TransformEvent.registerPreMixin((name, cn) -> {
 			if (MinecraftQuiltLoader.getEnvironmentType() == EnvType.SERVER) return;
 			final String splashTextClass;

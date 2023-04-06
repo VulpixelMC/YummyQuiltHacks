@@ -9,7 +9,10 @@ public class YummyLauncher {
 	@SuppressWarnings("ConfusingArgumentToVarargsMethod")
 	public static void main(String[] args) {
 		if (Boolean.parseBoolean(System.getProperty("yqh.relaunch"))) { // if we're in the third process,
-			MethodHandle main = Invoker.findStatic(Class.forName("net.cursedmc.yqh.impl.relaunch.YummyKnot"), "main", void.class, String[].class);
+			// set the context class loader
+			Thread.currentThread().setContextClassLoader(YummyClassLoader.INSTANCE);
+			
+			MethodHandle main = Invoker.findStatic(YummyClassLoader.INSTANCE.loadClass("net.cursedmc.yqh.impl.relaunch.YummyKnot"), "main", void.class, String[].class);
 			main.invokeExact(args); // launch YummyKnot
 			return;
 		} // else,

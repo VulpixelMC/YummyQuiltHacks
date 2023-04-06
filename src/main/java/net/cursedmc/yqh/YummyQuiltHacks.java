@@ -1,19 +1,18 @@
 package net.cursedmc.yqh;
 
-import net.auoeke.reflect.ClassDefiner;
 import net.auoeke.reflect.Classes;
 import net.bytebuddy.agent.ByteBuddyAgent;
-import net.cursedmc.yqh.api.instrumentation.Music;
-import net.cursedmc.yqh.api.mixin.Mixout;
 import net.devtech.grossfabrichacks.unsafe.UnsafeUtil;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.SystemUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.jetbrains.annotations.ApiStatus;
 import org.quiltmc.loader.api.LanguageAdapter;
+import org.quiltmc.loader.api.LanguageAdapterException;
 import org.quiltmc.loader.api.ModContainer;
-import org.quiltmc.loader.api.QuiltLoader;
 import org.quiltmc.loader.impl.launch.knot.Knot;
+import org.quiltmc.loader.impl.launch.knot.UnsafeKnotClassLoader;
 
 import java.io.File;
 import java.lang.management.ManagementFactory;
@@ -22,16 +21,24 @@ import java.nio.charset.StandardCharsets;
 import java.util.Objects;
 import java.util.jar.JarFile;
 
+@ApiStatus.Internal
 public class YummyQuiltHacks implements LanguageAdapter {
+	@Deprecated(
+			since = "0.2.0",
+			forRemoval = true
+	)
 	public static final ClassLoader UNSAFE_LOADER;
+	
+	public static final Logger LOGGER = LogManager.getLogger("YummyQuiltHacks");
+	private static final boolean RELAUNCH = false;
 	
 	@Override
 	public native <T> T create(ModContainer mod, String value, Class<T> type);
 	
-	public static final Logger LOGGER = LogManager.getLogger("YummyQuiltHacks");
-	
 	static {
-		if (Boolean.parseBoolean(System.getProperty("yqh.relaunch", "false"))) {
+		boolean doPwn = Boolean.parseBoolean(System.getProperty("yqh.relaunch", "false"));
+		doPwn = doPwn || !RELAUNCH; // FIXME: do this until we get relaunching working
+		if (doPwn) {
 			final ClassLoader appLoader = Knot.class.getClassLoader();
 			final ClassLoader knotLoader = YummyQuiltHacks.class.getClassLoader();
 			
@@ -60,35 +67,9 @@ public class YummyQuiltHacks implements LanguageAdapter {
 				ByteBuddyAgent.attach(FileUtils.getFile(jarPath), vmPid);
 			}
 			
-			final String[] manualLoad = {
-					"net.gudenau.lib.unsafe.Unsafe",
-			};
+			UnsafeUtil.initializeClass(appLoader.loadClass("org.quiltmc.loader.impl.launch.knot.UnsafeKnotClassLoader"));
 			
-			for (final String name : manualLoad) {
-				//noinspection ConstantConditions
-				if (name.equals("net.gudenau.lib.unsafe.Unsafe") && QuiltLoader.isDevelopmentEnvironment()) {
-					continue;
-				}
-				
-				final byte[] classBytes = Classes.classFile(knotLoader, name);
-				
-				if (classBytes == null) {
-					LOGGER.warn("Could not find class bytes for class " + name + " in loader " + knotLoader);
-					continue;
-				}
-				
-				ClassDefiner.make()
-						.name(name)
-						.classFile(classBytes)
-						.loader(appLoader)
-						.protectionDomain(YummyQuiltHacks.class.getProtectionDomain())
-						.define();
-			}
-			
-			UNSAFE_LOADER = UnsafeUtil.defineAndInitializeAndUnsafeCast(knotLoader, "org.quiltmc.loader.impl.launch.knot.UnsafeKnotClassLoader", appLoader);
-			
-			UnsafeUtil.initializeClass(Music.class);
-			UnsafeUtil.initializeClass(Mixout.class);
+			UNSAFE_LOADER = knotLoader;
 			
 			LOGGER.fatal("Quilt has been successfully pwned >:3");
 		} else {

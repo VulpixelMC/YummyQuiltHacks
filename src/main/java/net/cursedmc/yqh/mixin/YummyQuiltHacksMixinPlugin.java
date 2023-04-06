@@ -2,6 +2,7 @@ package net.cursedmc.yqh.mixin;
 
 import net.auoeke.reflect.Accessor;
 import net.cursedmc.yqh.api.entrypoints.PreMixin;
+import net.cursedmc.yqh.impl.relaunch.YummyKnot;
 import net.devtech.grossfabrichacks.unsafe.UnsafeUtil;
 import org.objectweb.asm.tree.ClassNode;
 import org.quiltmc.loader.impl.entrypoint.EntrypointUtils;
@@ -50,6 +51,6 @@ public class YummyQuiltHacksMixinPlugin implements IMixinConfigPlugin {
 		final Object processor = Accessor.getReference(transformer, "processor");
 		UnsafeUtil.unsafeCast(processor, HackedMixinProcessor.class);
 		
-		EntrypointUtils.invoke("yqh:pre_mixin", PreMixin.class, PreMixin::onPreMixin);
+		YummyKnot.invokeEntrypoints("pre_mixin", PreMixin::onPreMixin);
 	}
 }

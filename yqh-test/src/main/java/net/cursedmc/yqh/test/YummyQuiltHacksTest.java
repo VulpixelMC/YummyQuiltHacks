@@ -3,6 +3,7 @@ package net.cursedmc.yqh.test;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.quiltmc.loader.api.ModContainer;
+import org.quiltmc.loader.impl.game.minecraft.Hooks;
 import org.quiltmc.qsl.base.api.entrypoint.ModInitializer;
 
 public class YummyQuiltHacksTest implements ModInitializer {
@@ -11,5 +12,7 @@ public class YummyQuiltHacksTest implements ModInitializer {
 	@Override
 	public void onInitialize(final ModContainer mod) {
 		LOGGER.info("hi");
+		
+		System.out.println(Hooks.QUILT);
 	}
 }
