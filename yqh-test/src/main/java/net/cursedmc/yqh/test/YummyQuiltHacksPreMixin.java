@@ -22,7 +22,6 @@ public class YummyQuiltHacksPreMixin implements PreMixin {
 		
 		LOGGER.info(YummyQuiltHacksPreMixin.class.getClassLoader());
 		
-		LOGGER.info(Hooks.QUILT);
 		Mixout.TransformEvent.registerPreMixin((name, cn) -> {
 			if (MinecraftQuiltLoader.getEnvironmentType() == EnvType.SERVER) return;
 			final String splashTextClass;

@@ -1,3 +1,5 @@
+rootProject.name = "yqh"
+
 pluginManagement {
 	repositories {
 		maven {

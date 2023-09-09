@@ -9,7 +9,8 @@
 			"name": "YummyQuiltHacks",
 			"description": "A short description of your mod.",
 			"contributors": {
-				"SylvKT": "Owner",
+				"Vulpixel": "Owner",
+				"SylvKT": "Author",
 				"ENDERZOMBI102": "Contributor"
 			},
 			"contact": {
@@ -27,9 +28,6 @@
 			},
 			"minecraft"
 		],
-		"_comment_re-add_to_adapters_after_1.0": {
-			"yqh-relaunch": "net.cursedmc.yqh.impl.relaunch.YummyRelauncher"
-		},
 		"language_adapters": {
 			"yqh": "net.cursedmc.yqh.YummyQuiltHacks"
 		}

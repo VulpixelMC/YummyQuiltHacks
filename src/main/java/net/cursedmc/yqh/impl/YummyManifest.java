@@ -1,4 +1,4 @@
-package net.cursedmc.yqh.impl.relaunch;
+package net.cursedmc.yqh.impl;
 
 import java.util.Map;
 

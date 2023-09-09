@@ -37,7 +37,7 @@ public final class UnsafeKnotClassLoader extends org.quiltmc.loader.impl.launch.
 	}
 	
 	@Override
-	public Class<?> loadClass(String name, boolean resolve) {
+	public Class<?> loadClass(String name, boolean resolve) throws ClassNotFoundException {
 		return super.loadClass(name, resolve);
 	}
 	

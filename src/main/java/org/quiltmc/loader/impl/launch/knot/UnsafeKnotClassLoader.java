@@ -57,12 +57,12 @@ public class UnsafeKnotClassLoader extends KnotClassLoader {
 	
 	public Class<?> loadClass(String name, boolean resolve, boolean allowFromParent) throws ClassNotFoundException {
 		synchronized (this.getClassLoadingLock(name)) {
-			Class<?> klass = CLASSES.get(name);
+			Class<?> clazz = CLASSES.get(name);
 			
-			if (klass == null) {
-				klass = this.findLoadedClass(name);
+			if (clazz == null) {
+				clazz = this.findLoadedClass(name);
 				
-				if (klass == null) {
+				if (clazz == null) {
 					if (!name.startsWith("java.")) {
 						final byte[] input = DELEGATE.getPostMixinClassByteArray(name, allowFromParent);
 						
@@ -79,28 +79,28 @@ public class UnsafeKnotClassLoader extends KnotClassLoader {
 								}
 							}
 							
-							klass = super.defineClass(name, input, 0, input.length, metadata.codeSource);
+							clazz = super.defineClass(name, input, 0, input.length, metadata.codeSource);
 						} else {
-							klass = YUMMY_LOADER.loadClass(name);
+							clazz = YUMMY_LOADER.loadClass(name);
 						}
 					} else {
-						klass = YUMMY_LOADER.loadClass(name);
+						clazz = YUMMY_LOADER.loadClass(name);
 					}
 				}
 			}
 			
-			CLASSES.put(name, klass);
+			CLASSES.put(name, clazz);
 			
 			if (resolve) {
-				this.resolveClass(klass);
+				this.resolveClass(clazz);
 			}
 			
-			return klass;
+			return clazz;
 		}
 	}
 	
 	@Override
-	public Class<?> loadClass(String name, boolean resolve) {
+	public Class<?> loadClass(String name, boolean resolve) throws ClassNotFoundException {
 		return this.loadClass(name, resolve, false);
 	}
 	

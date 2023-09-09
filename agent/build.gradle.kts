@@ -2,21 +2,18 @@ plugins {
 	java
 }
 
-base.archivesBaseName = "agent"
-group = "net.cursedmc"
+base.archivesName.set("agent")
+group = "gay.sylv.vulpixel"
 version = "0.1"
 
 repositories {
 	mavenLocal()
 	mavenCentral()
-	
-	maven {
-		name = "auoeke Maven"
-		url = uri("https://maven.auoeke.net")
-	}
 }
 
 dependencies {
+	implementation("org.jetbrains:annotations:24.0.1")
+	
 	annotationProcessor("net.auoeke:uncheck:latest.release")
 }
 

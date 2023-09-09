@@ -8,12 +8,16 @@ val modVersion: String by project
 val mavenGroup: String by project
 val modId: String by project
 
-base.archivesBaseName = modId
+base.archivesName.set(modId)
 version = modVersion
 group = mavenGroup
 
 repositories {
-	mavenLocal()
+	mavenLocal {
+		content {
+			includeModule("gay.sylv.vulpixel", "yqh")
+		}
+	}
 	mavenCentral()
 	// Add repositories to retrieve artifacts from in here.
 	// You should only use this when depending on other mods because
@@ -34,36 +38,33 @@ repositories {
 	}
 	
 	maven {
-		name = "auoeke Maven"
-		url = uri("https://maven.auoeke.net")
-	}
-	
-	maven {
 		name = "ENDERZOMBI102 Maven"
 		url = uri("https://repsy.io/mvn/enderzombi102/mc")
 	}
 }
 
-val modImplementationInclude by configurations.register("modImplementationInclude")
+configurations.all {
+	resolutionStrategy {
+		cacheChangingModulesFor(0, "seconds")
+	}
+}
 
 // All the dependencies are declared at gradle/libs.version.toml and referenced with "libs.<id>"
 // See https://docs.gradle.org/current/userguide/platforms.html for information on how version catalogs work.
 dependencies {
 	minecraft(libs.minecraft)
-	mappings(loom.layered() {
-		addLayer(quiltMappings.mappings("org.quiltmc:quilt-mappings:${libs.versions.quilt.mappings.get()}:v2"))
+	@Suppress("UnstableApiUsage")
+	mappings(loom.layered {
+		officialMojangMappings() // falling back to mojmap
+		mappings("org.quiltmc:quilt-mappings:${libs.versions.minecraft.get()}+build.${libs.versions.quilt.mappings.get()}:intermediary-v2")
 	})
 	modImplementation(libs.quilt.loader)
 	
-	modImplementation("net.cursedmc:yqh:latest.release")
+	modImplementation("gay.sylv.vulpixel:yqh:latest.release") {
+		isChanging = true
+	}
 	
 	annotationProcessor("net.auoeke:uncheck:latest.release")
-	
-	add(
-		sourceSets.main.get().getTaskName("mod", JavaPlugin.IMPLEMENTATION_CONFIGURATION_NAME),
-		modImplementationInclude
-	)
-	add(net.fabricmc.loom.util.Constants.Configurations.INCLUDE, modImplementationInclude)
 }
 
 tasks.processResources {
