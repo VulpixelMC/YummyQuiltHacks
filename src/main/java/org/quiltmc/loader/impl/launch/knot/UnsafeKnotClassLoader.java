@@ -22,17 +22,14 @@ import java.net.URLClassLoader;
 @ApiStatus.Internal
 @ApiStatus.NonExtendable
 public class UnsafeKnotClassLoader extends KnotClassLoader {
-	private static final ClassLoader YUMMY_LOADER = Knot.class.getClassLoader();
+	private static final ClassLoader APP_LOADER = Knot.class.getClassLoader();
 	private static final ClassLoader KNOT_LOADER = Thread.currentThread().getContextClassLoader();
 	
-	/**
-	 * <b>Warning</b>: This isn't actually the app loader!
-	 */
 	@Deprecated(
 			since = "0.2.0",
 			forRemoval = true
 	)
-	public static final ClassLoader appLoader = YUMMY_LOADER;
+	public static final ClassLoader appLoader = APP_LOADER;
 	@Deprecated(
 			since = "0.2.0",
 			forRemoval = true
@@ -81,10 +78,10 @@ public class UnsafeKnotClassLoader extends KnotClassLoader {
 							
 							clazz = super.defineClass(name, input, 0, input.length, metadata.codeSource);
 						} else {
-							clazz = YUMMY_LOADER.loadClass(name);
+							clazz = APP_LOADER.loadClass(name);
 						}
 					} else {
-						clazz = YUMMY_LOADER.loadClass(name);
+						clazz = APP_LOADER.loadClass(name);
 					}
 				}
 			}
@@ -115,12 +112,17 @@ public class UnsafeKnotClassLoader extends KnotClassLoader {
 		CLASSES.put("org.quiltmc.loader.impl.launch.knot.UnsafeKnotClassLoader", UnsafeKnotClassLoader.class);
 		
 		final String[] manualLoad = {
+				"net.cursedmc.yqh.api.instrumentation.Music",
+				"net.cursedmc.yqh.api.instrumentation.Music$1",
+				"net.cursedmc.yqh.api.mixin.Mixout",
+				"net.cursedmc.yqh.api.mixin.Mixout$TransformEvent",
+				"ca.rttv.ASMFormatParser",
 				"net.cursedmc.yqh.api.entrypoints.PreMixin",
 				"org.spongepowered.asm.mixin.transformer.HackedMixinProcessor",
 		};
 		
 		for (final String name : manualLoad) {
-			CLASSES.put(name, UnsafeUtil.findAndDefineClass(name, YUMMY_LOADER));
+			CLASSES.put(name, UnsafeUtil.findAndDefineClass(name, APP_LOADER));
 		}
 		
 		LOGGER.info("Loaded classes with yummy loader");

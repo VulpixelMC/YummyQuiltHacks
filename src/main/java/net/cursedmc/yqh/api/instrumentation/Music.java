@@ -73,13 +73,14 @@ public class Music {
 	
 	static {
 		LOGGER.info("Music Loaded");
-		LOGGER.info("what have we done");
-		LOGGER.info("how did we get here");
-		LOGGER.info("achievement unlcoekd");
-		LOGGER.info("advancement*");
 		final ClassLoader appLoader = Knot.class.getClassLoader();
 		
-		final Class<?> musicAgent = Class.forName("net.cursedmc.yqh.impl.instrumentation.MusicAgent", true, appLoader);
-		INST = (Instrumentation) musicAgent.getDeclaredField("INST").get(null);
+		final Class<?> musicAgent;
+		try {
+			musicAgent = Class.forName("net.cursedmc.yqh.impl.instrumentation.MusicAgent", true, appLoader);
+			INST = (Instrumentation) musicAgent.getDeclaredField("INST").get(null);
+		} catch (ClassNotFoundException | NoSuchFieldException | IllegalAccessException e) {
+			throw new RuntimeException(e);
+		}
 	}
 }

@@ -1,5 +1,6 @@
 package net.cursedmc.yqh;
 
+import com.jsoniter.JsonIterator;
 import com.sun.tools.attach.AgentInitializationException;
 import com.sun.tools.attach.AgentLoadException;
 import com.sun.tools.attach.AttachNotSupportedException;
@@ -7,6 +8,9 @@ import com.sun.tools.attach.VirtualMachine;
 import it.unimi.dsi.fastutil.Pair;
 import net.auoeke.reflect.Accessor;
 import net.bytebuddy.agent.ByteBuddyAgent;
+import net.cursedmc.yqh.api.entrypoints.PreMixin;
+import net.cursedmc.yqh.impl.manifest.YummyManifest;
+import net.cursedmc.yqh.impl.manifest.YummyManifestSchema;
 import net.devtech.grossfabrichacks.unsafe.UnsafeUtil;
 import org.apache.commons.io.FileUtils;
 import org.apache.logging.log4j.LogManager;
@@ -21,8 +25,10 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.management.ManagementFactory;
+import java.lang.reflect.InvocationTargetException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Stream;
@@ -37,6 +43,7 @@ public class YummyQuiltHacks implements LanguageAdapter {
 	
 	public static final Logger LOGGER = LogManager.getLogger("YummyQuiltHacks");
 	private static final boolean RELAUNCH = false;
+	static final Map<String, YummyManifest> MANIFESTS = new HashMap<>();
 	
 	@Override
 	public native <T> T create(ModContainer mod, String value, Class<T> type);
@@ -110,6 +117,25 @@ public class YummyQuiltHacks implements LanguageAdapter {
 								try {
 									manifestBytes = Files.readAllBytes(path);
 								} catch (IOException e) {
+									throw new RuntimeException(e);
+								}
+								
+								YummyManifestSchema manifestSchema = JsonIterator.deserialize(manifestBytes, YummyManifestSchema.class);
+								if (manifestSchema.schemaVersion != 1) {
+									throw new UnsupportedOperationException("the schema version " + manifestSchema.schemaVersion + " in the yqh.mod.json of " + mod.metadata().name() + " (" + mod.metadata().id() + ") is unsupported.");
+								}
+								
+								YummyManifest manifest = JsonIterator.deserialize(manifestBytes, YummyManifest.class);
+								MANIFESTS.put(mod.metadata().id(), manifest);
+								
+								// call entrypoint
+								String entryClassName = manifest.entrypoints.get("pre_mixin");
+								try {
+									Class<? extends PreMixin> entryClass = knotLoader.loadClass(entryClassName).asSubclass(PreMixin.class);
+									PreMixin entry = entryClass.getDeclaredConstructor().newInstance();
+									entry.onPreMixin();
+								} catch (ClassNotFoundException | InvocationTargetException | InstantiationException |
+										 IllegalAccessException | NoSuchMethodException e) {
 									throw new RuntimeException(e);
 								}
 							}
