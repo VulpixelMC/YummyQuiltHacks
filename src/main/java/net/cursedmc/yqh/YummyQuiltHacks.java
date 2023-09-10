@@ -6,37 +6,26 @@ import com.sun.tools.attach.AttachNotSupportedException;
 import com.sun.tools.attach.VirtualMachine;
 import it.unimi.dsi.fastutil.Pair;
 import net.auoeke.reflect.Accessor;
-import net.auoeke.reflect.ClassDefiner;
 import net.bytebuddy.agent.ByteBuddyAgent;
-import net.cursedmc.yqh.api.instrumentation.Music;
 import net.devtech.grossfabrichacks.unsafe.UnsafeUtil;
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.lang3.SystemUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.ApiStatus;
 import org.quiltmc.loader.api.LanguageAdapter;
 import org.quiltmc.loader.api.ModContainer;
 import org.quiltmc.loader.api.QuiltLoader;
-import org.quiltmc.loader.api.plugin.ModContainerExt;
 import org.quiltmc.loader.impl.launch.knot.Knot;
-import org.quiltmc.loader.impl.metadata.qmj.AdapterLoadableClassEntry;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.management.ManagementFactory;
-import java.net.URLDecoder;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Collection;
 import java.util.Map;
 import java.util.Objects;
-import java.util.jar.JarFile;
 import java.util.stream.Stream;
-
-import static com.enderzombi102.enderlib.SafeUtils.doSafely;
 
 @ApiStatus.Internal
 public class YummyQuiltHacks implements LanguageAdapter {
@@ -87,7 +76,6 @@ public class YummyQuiltHacks implements LanguageAdapter {
 				throw new RuntimeException(e);
 			}
 			
-			LOGGER.info(YummyQuiltHacks.class.getProtectionDomain().getCodeSource().getLocation());
 			final String vmPid = String.valueOf(ManagementFactory.getRuntimeMXBean().getPid());
 			
 			// make a temp file of the agent jar, so we can attach it
