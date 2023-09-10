@@ -91,12 +91,21 @@ public class YummyQuiltHacks implements LanguageAdapter {
 			final String vmPid = String.valueOf(ManagementFactory.getRuntimeMXBean().getPid());
 			
 			// make a temp file of the agent jar, so we can attach it
-			final File tempJar = File.createTempFile("tmp_", null);
-			FileUtils.writeByteArrayToFile(tempJar, jarBytes);
+			final File tempJar;
+			try {
+				tempJar = File.createTempFile("tmp_", null);
+				FileUtils.writeByteArrayToFile(tempJar, jarBytes);
+			} catch (IOException e) {
+				throw new RuntimeException(e);
+			}
 			
 			ByteBuddyAgent.attach(FileUtils.getFile(tempJar.getAbsolutePath()), vmPid);
 			
-			UnsafeUtil.initializeClass(appLoader.loadClass("org.quiltmc.loader.impl.launch.knot.UnsafeKnotClassLoader"));
+			try {
+				UnsafeUtil.initializeClass(appLoader.loadClass("org.quiltmc.loader.impl.launch.knot.UnsafeKnotClassLoader"));
+			} catch (ClassNotFoundException e) {
+				throw new RuntimeException(e);
+			}
 			
 			UNSAFE_LOADER = knotLoader;
 			

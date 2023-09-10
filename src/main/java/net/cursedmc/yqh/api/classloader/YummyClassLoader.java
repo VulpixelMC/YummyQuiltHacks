@@ -8,8 +8,12 @@ import net.auoeke.reflect.Invoker;
 import net.cursedmc.yqh.YummyQuiltHacks;
 import org.quiltmc.loader.api.QuiltLoader;
 import org.quiltmc.loader.impl.util.NewUrlUtil;
+import org.quiltmc.loader.impl.util.UrlConversionException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.lang.invoke.MethodHandle;
 import java.net.JarURLConnection;
 import java.net.URL;
@@ -30,6 +34,7 @@ public class YummyClassLoader extends SecureClassLoader {
 	private static final Object2ReferenceMap<String, Class<?>> CLASSES = new Object2ReferenceOpenHashMap<>();
 	private static final ClassLoader APP_LOADER = YummyClassLoader.class.getClassLoader();
 	private static final MethodHandle MIXOUT_PRE_LOADER;
+	private static final Logger LOGGER = LoggerFactory.getLogger("YummyQuiltHacks/YummyClassLoader");
 	
 	/**
 	 * Returns the app class loader.
@@ -65,39 +70,44 @@ public class YummyClassLoader extends SecureClassLoader {
 					if (classUrl == null) throw new ClassNotFoundException(name);
 					
 					if (!classUrl.getProtocol().equals("jrt")) { // make sure we don't load any Java Runtime classes
-						byte[] classBytes = classUrl.openStream().readAllBytes();
-						URL codeSourceUrl = NewUrlUtil.getSource(filename, classUrl);
-						Certificate[] certificates = null;
-						try {
-							if (!Files.isDirectory(NewUrlUtil.asPath(codeSourceUrl))) {
-								URLConnection connection = new URL("jar:" + codeSourceUrl + "!/").openConnection();
-								if (connection instanceof JarURLConnection jarConnection) {
-									certificates = jarConnection.getCertificates();
-								}
-							}
-						} catch (IOException e) {
-							e.printStackTrace();
-						}
-						
-						try {
-							classBytes = (byte[]) MIXOUT_PRE_LOADER.invokeExact(name, classBytes);
-						} catch (NullPointerException ignored) {} // because we load some stuff before
-						
-						int pkgDelimiterPos = name.lastIndexOf('.');
-						
-						if (pkgDelimiterPos > 0) {
-							String pkgString = name.substring(0, pkgDelimiterPos);
+						try(InputStream is = classUrl.openStream()) {
+							byte[] classBytes = is.readAllBytes();
 							
-							if (this.getDefinedPackage(pkgString) == null) {
-								try {
-									this.definePackage(pkgString, null, null, null, null, null, null, null);
-								} catch (IllegalArgumentException e) { // presumably concurrent package definition
-									if (this.getDefinedPackage(pkgString) == null) throw e; // still not defined?
+							URL codeSourceUrl = NewUrlUtil.getSource(filename, classUrl);
+							Certificate[] certificates = null;
+							try {
+								if (!Files.isDirectory(NewUrlUtil.asPath(codeSourceUrl))) {
+									URLConnection connection = new URL("jar:" + codeSourceUrl + "!/").openConnection();
+									if (connection instanceof JarURLConnection jarConnection) {
+										certificates = jarConnection.getCertificates();
+									}
+								}
+							} catch (IOException e) {
+								LOGGER.error("An error has occurred.", e);
+							}
+							
+							try {
+								classBytes = (byte[]) MIXOUT_PRE_LOADER.invokeExact(name, classBytes);
+							} catch (NullPointerException ignored) {} // because we load some stuff before
+							
+							int pkgDelimiterPos = name.lastIndexOf('.');
+							
+							if (pkgDelimiterPos > 0) {
+								String pkgString = name.substring(0, pkgDelimiterPos);
+								
+								if (this.getDefinedPackage(pkgString) == null) {
+									try {
+										this.definePackage(pkgString, null, null, null, null, null, null, null);
+									} catch (IllegalArgumentException e) { // presumably concurrent package definition
+										if (this.getDefinedPackage(pkgString) == null) throw e; // still not defined?
+									}
 								}
 							}
+							
+							klass = this.defineClass(name, classBytes, new CodeSource(codeSourceUrl, certificates));
+						} catch (Throwable e) {
+							throw new RuntimeException(e);
 						}
-						
-						klass = this.defineClass(name, classBytes, new CodeSource(codeSourceUrl, certificates));
 					}
 					
 					if (klass == null) {
@@ -150,15 +160,17 @@ public class YummyClassLoader extends SecureClassLoader {
 				"net.cursedmc.yqh.api.instrumentation.Music$1",
 				"net.cursedmc.yqh.api.mixin.Mixout",
 				"net.cursedmc.yqh.api.mixin.Mixout$TransformEvent",
-				"net.cursedmc.yqh.api.mixin.Mixout$RawTransformEvent",
-				"net.cursedmc.yqh.api.mixin.Mixout$RawTransformEvent$1",
 				"ca.rttv.ASMFormatParser",
 		};
 		
-		for (String name : manualLoad) {
-			YummyClassLoader.INSTANCE.loadClass(name);
+		try {
+			for (String name : manualLoad) {
+				YummyClassLoader.INSTANCE.loadClass(name);
+			}
+			
+			MIXOUT_PRE_LOADER = Invoker.findStatic(YummyClassLoader.INSTANCE.loadClass("net.cursedmc.yqh.api.mixin.Mixout$RawTransformEvent"), "preLoader", byte[].class, String.class, byte[].class);
+		} catch (ClassNotFoundException e) {
+			throw new RuntimeException(e);
 		}
-		
-		MIXOUT_PRE_LOADER = Invoker.findStatic(YummyClassLoader.INSTANCE.loadClass("net.cursedmc.yqh.api.mixin.Mixout$RawTransformEvent"), "preLoader", byte[].class, String.class, byte[].class);
 	}
 }

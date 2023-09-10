@@ -59,6 +59,7 @@ dependencies {
 	implementation(include("net.auoeke", "unsafe", "latest.release"))
 	implementation(include("com.enderzombi102", "EnderLib", "0.2.0"))
 	implementation(include("net.bytebuddy", "byte-buddy-agent", "1.12.+"))
+	implementation(include("com.jsoniter", "jsoniter", "0.9.19"))
 	
 //	modRuntimeOnly("com.terraformersmc", "modmenu", "4.0.0")
 //	modRuntimeOnly("maven.modrinth", "wthit", "fabric-5.4.3")
@@ -66,8 +67,6 @@ dependencies {
 //	modRuntimeOnly("maven.modrinth", "emi", "0.2.0+1.19")
 
 //	modRuntimeOnly(libs.quilted.fabric.api)
-	
-	annotationProcessor("net.auoeke:uncheck:latest.release")
 }
 
 tasks.processResources {

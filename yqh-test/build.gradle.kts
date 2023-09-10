@@ -63,8 +63,6 @@ dependencies {
 	modImplementation("gay.sylv.vulpixel:yqh:latest.release") {
 		isChanging = true
 	}
-	
-	annotationProcessor("net.auoeke:uncheck:latest.release")
 }
 
 tasks.processResources {

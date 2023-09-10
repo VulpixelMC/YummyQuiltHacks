@@ -37,31 +37,6 @@ public class Mixout {
 		}
 	}
 	
-	@FunctionalInterface
-	public interface RawTransformEvent {
-		List<RawTransformEvent> PRE_LOADER = new ArrayList<>();
-		
-		byte[] transform(String name, byte[] bytes);
-		
-		static void registerPreLoader(RawTransformEvent callback) {
-			PRE_LOADER.add(callback);
-		}
-		
-		static byte[] preLoader(String name, byte[] bytes) {
-			if (name.equals(Mixout.class.getName())) {
-				throw new UnsupportedOperationException("Attempted to modify Mixout! Check if Mixout is being class-loaded twice.");
-			}
-			var $ = new Object() {
-				byte[] b = bytes;
-			};
-			PRE_LOADER.forEach(callback -> $.b = callback.transform(name, $.b));
-			if (name.equals("org.quiltmc.loader.impl.game.minecraft.Hooks")) {
-				System.out.println("modified Hooks: " + !Arrays.equals(bytes, $.b));
-			}
-			return $.b;
-		}
-	}
-	
 	static {
 		LOGGER.info("mixin, mixout. mixin, mixout. /lyr");
 		LOGGER.info("we have truly achieved a sad state of realization, one that encompasses the entire jdk, the minecraft classes.. everything. we have untold power, and with so may come untold consequences. tread lightly, explorer.");

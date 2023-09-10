@@ -10,7 +10,7 @@ import java.security.CodeSource;
  * Allows access to the instance of {@link org.quiltmc.loader.impl.launch.knot.UnsafeKnotClassLoader} and {@link org.quiltmc.loader.impl.launch.knot.KnotClassLoader}.
  * @since 0.2.0
  */
-@SuppressWarnings("RedundantThrows")
+@SuppressWarnings("unused")
 public final class UnsafeKnotClassLoader extends org.quiltmc.loader.impl.launch.knot.UnsafeKnotClassLoader {
 	public static final UnsafeKnotClassLoader INSTANCE;
 	

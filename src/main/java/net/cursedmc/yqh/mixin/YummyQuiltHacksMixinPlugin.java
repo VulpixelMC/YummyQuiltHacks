@@ -1,7 +1,6 @@
 package net.cursedmc.yqh.mixin;
 
 import net.auoeke.reflect.Accessor;
-import net.cursedmc.yqh.YummyQuiltHacks;
 import net.devtech.grossfabrichacks.unsafe.UnsafeUtil;
 import org.objectweb.asm.tree.ClassNode;
 import org.spongepowered.asm.mixin.MixinEnvironment;
