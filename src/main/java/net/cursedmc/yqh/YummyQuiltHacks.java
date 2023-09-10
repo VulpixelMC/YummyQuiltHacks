@@ -106,7 +106,6 @@ public class YummyQuiltHacks implements LanguageAdapter {
 							ModContainer mod = pair.left();
 							Path path = pair.right();
 							if (Files.isRegularFile(path)) {
-								LOGGER.info(mod.metadata().name() + " has yqh.mod.json");
 								byte[] manifestBytes;
 								try {
 									manifestBytes = Files.readAllBytes(path);
