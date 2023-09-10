@@ -1,4 +1,3 @@
 # YummyQuiltHacks
 
-we hack the blanket to make it taste good
-yum 😋
+A cursed library for doing practical things in immoral ways.
